@@ -1,11 +1,7 @@
 # poc-k8s-cluster
 version 2 repositorio  anterior plantilla-cluster
 
-# plantilla-cluster-k8s
-Plantilla para proyecto entorno cluster distribuido microservicios y componentes core.
-
-
-Es un proyecto base que cuenta con despliegues de componentes necesarios para control sobre una solucion completa basada en  arquitecturas orientadas a microservicios y en entornos distribuidos. El cual se despliega sobre un cluster de kubernetes como orquestador PAAS y runtime de Docker para ejecucion de contenedores los cuales incluyen.
+Proyecto base que cuenta con despliegues de componentes necesarios para control sobre una solucion completa basada en  arquitecturas orientadas a microservicios y en entornos distribuidos. El cual se despliega sobre un cluster de kubernetes como orquestador PAAS y runtime de Docker para ejecucion de contenedores los cuales incluyen.
 
 * Balanceador de carga (Traefik)
 * Componente de monitorizacion de trazas (EFK + Securizacion con X-Pack)
