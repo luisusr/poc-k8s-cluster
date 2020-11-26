@@ -1,12 +1,13 @@
 # poc-k8s-cluster
 version 2 repositorio  anterior plantilla-cluster
 
-Proyecto base que cuenta con despliegues de componentes necesarios para control sobre una solucion completa basada en  arquitecturas orientadas a microservicios y en entornos distribuidos. El cual se despliega sobre un cluster de kubernetes como orquestador PAAS y runtime de Docker para ejecucion de contenedores los cuales incluyen.
+Proyecto base que cuenta con despliegues de componentes necesarios para control sobre una solucion completa basada en arquitecturas orientadas a microservicios y en entornos distribuidos. El cual se despliega sobre un cluster de kubernetes como plataforma orquestador y runtime de Docker para ejecucion de contenedores en los nodos los cuales incluyen.
 
-* Balanceador de carga (Traefik)
+* Balanceador de carga (Traefik + SSL/TLS para HTTPS)
 * Componente de monitorizacion de trazas (EFK + Securizacion con X-Pack)
-* Componente de monitorizacion de cluster (Grafana)
-* componente de trazabilidad (Jaeger Desarrollo)
+* Componente de monitorizacion de cluster (Prometeo + Grafana)
+* componente de trazabilidad (Jaeger Desarrollo)***
+* Kubernetes dashboard con ingress y RBAC cuenta de servicio administrador
 * Un microservicio de prueba con dependencias necesarias para interaccion con componentes
 
 Requisitos:
@@ -35,7 +36,7 @@ Una vez instalado el cluster y desplegados los componentes, es necesario importa
 
 **Notas:** 
 * Quedan tambien pendientes de agregar microservicio de discovery y/o centralizador de api y ejemplo de cloud config para entornos.
-* Se agrega Jaeger de desarrollo como version inicial. En siguientes versiones se ira sustituyendo por el componente productivo.
+* ***Se agrega Jaeger de desarrollo como version inicial. En siguientes versiones se ira sustituyendo por el componente productivo.
 
 **Changelog** 
 * 1.0 Version inicial
