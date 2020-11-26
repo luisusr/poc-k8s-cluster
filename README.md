@@ -13,7 +13,7 @@ Proyecto base que cuenta con despliegues de componentes necesarios para control 
 Requisitos:
 * Maven 3.x
 * Jdk 8
-* Kubernetes
+* Kubernetes (kubeadm kubelet 1.18*** y kubectl. Se recomienda instalacion con kubeadm en linux. Para Win y Mac OS es necesario instalar [Docker Desktop](https://www.docker.com/products/docker-desktop))  
 * Container runtime (Docker)
 * [Ejecutar registry local](https://docs.docker.com/registry/deploying/)
 
