@@ -5,7 +5,7 @@ Proyecto base que cuenta con despliegues de componentes necesarios para control 
 
 * Balanceador de carga (Traefik + SSL/TLS para HTTPS)
 * Componente de monitorizacion de trazas (EFK + Securizacion con X-Pack)
-* Componente de monitorizacion de cluster (Prometeo + Grafana)
+* Componente de monitorizacion de cluster (Prometeo** + Grafana)
 * componente de trazabilidad (Jaeger Desarrollo)***
 * Kubernetes dashboard con ingress y RBAC cuenta de servicio administrador
 * Un microservicio de prueba con dependencias necesarias para interaccion con componentes
@@ -36,6 +36,7 @@ Una vez instalado el cluster y desplegados los componentes, es necesario importa
 
 **Notas:** 
 * Quedan tambien pendientes de agregar microservicio de discovery y/o centralizador de api y ejemplo de cloud config para entornos.
+* **Pendiente de agregar alertmanager de prometeo.
 * ***Se agrega Jaeger de desarrollo como version inicial. En siguientes versiones se ira sustituyendo por el componente productivo.
 * ****Se ha detectado que a partir de la version 1.19.* de kubelet, han dejado de mostrarse las metricas de maquina en el cadvisor como se menciona en este [issue](https://github.com/kubernetes/kubernetes/issues/95204) y en este [PR](https://github.com/kubernetes/kubernetes/pull/95210). Por lo que el tablero de grafana incluido en este repositorio no mostrara las graficas de uso de CPU y RAM en el cluster. Por lo tanto, bien se puede quedarse con la ultima version de kubelet 1.18.9, o bien, desplegar el componenente [kube-state-metrics](https://github.com/kubernetes/kube-state-metrics). No explicado ni incluido en este repositorio.
 
