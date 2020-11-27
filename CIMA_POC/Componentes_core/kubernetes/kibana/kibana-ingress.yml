@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kibana-ingress
+  namespace: cima-logging
+  annotations:
+      kubernetes.io/ingress.class: traefik
+spec:
+  tls:
+  - hosts:
+    - kibana.cima.es
+  rules:
+    - host: kibana.cima.es
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kibana
+                port:
+                  number: 5601

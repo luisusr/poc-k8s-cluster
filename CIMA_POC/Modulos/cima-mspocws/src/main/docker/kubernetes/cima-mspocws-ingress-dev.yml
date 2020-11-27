@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cima-mspocws-ingress
+  namespace: cima-dev
+  annotations:
+      kubernetes.io/ingress.class: traefik
+spec:
+  tls:
+  - hosts:
+    - cima-mspocws-dev.cima.es
+  rules:
+    - host: cima-mspocws-dev.cima.es
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: cima-mspocws-app
+                port:
+                  number: 9080

@@ -1,0 +1,8 @@
+#!/bin/bash
+# ./ocreg
+kubectl create secret generic elastic-cert --from-file elasticsearch/tls/elastic-certificates.p12 -n cima-logging
+kubectl apply -f elasticsearch/oc/
+kubectl apply -f kibana/oc/
+kubectl apply -f fluentd/oc/
+# kubectl apply -f jaeger/oc/
+

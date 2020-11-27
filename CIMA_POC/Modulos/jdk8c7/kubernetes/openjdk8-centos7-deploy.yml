@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openjdk8-centos7
+  namespace: cima-dev
+spec:
+  selector:
+    matchLabels:
+      app: openjdk8-centos7
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: openjdk8-centos7
+    spec:
+      containers:
+      - name: openjdk8-centos7
+        image: registry:5000/openjdk8-centos7
+        stdin: true
+        tty: true
+        imagePullPolicy: "Always"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "1000m"

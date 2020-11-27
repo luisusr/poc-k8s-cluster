@@ -1,0 +1,18 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: kibana-config
+  namespace: cima-logging
+  labels:
+    name: kibana-config
+data:
+  kibana.yml: |
+    # Default Kibana configuration for docker target
+    server:
+      name: kibana
+      host: "0"
+    elasticsearch:
+      hosts: [ "http://elasticsearch.cima-logging:9200" ]
+      username: "elastic"
+      password: "cimadmin123"
+    xpack.monitoring.ui.container.elasticsearch.enabled: true

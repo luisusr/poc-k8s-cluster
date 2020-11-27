@@ -1,0 +1,79 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: traefik-ingress-controller
+  namespace: cima-networking
+  labels:
+    app: traefik-ingress-controller
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: traefik-ingress-controller
+  template:
+    metadata:
+      labels:
+        app: traefik-ingress-controller
+        name: traefik-ingress-controller
+    spec:
+      serviceAccountName: traefik-ingress-controller
+      terminationGracePeriodSeconds: 60
+      volumes:
+      - name: traefik-tls-cert
+        secret:
+          secretName: traefik-tls-cert
+      - name: traefik-dynamic-configmap
+        configMap:
+          name: traefik-dynamic-configmap
+      containers:
+      - image: traefik
+        name: traefik-ingress-controller
+        volumeMounts:
+        - mountPath: /ssl
+          name: traefik-tls-cert
+        - mountPath: /traefik
+          name: traefik-dynamic-configmap
+        args:
+        - --global.checknewversion=false
+        - --global.sendanonymoususage=false
+        - --entrypoints.websecure.address=:443
+        - --entryPoints.websecure.http.tls
+        - --providers.kubernetesingress
+        - --log.level=INFO
+        - --api.dashboard
+        - --metrics.prometheus=true
+        - --metrics.prometheus.buckets=0.100000, 0.300000, 1.200000, 5.000000
+        - --metrics.prometheus.entryPoint=traefik
+        - --providers.file.filename=/traefik/traefik.toml
+        ports:
+        - name: websecure
+          containerPort: 443
+        - name: admin
+          containerPort: 8080
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: traefik-ingress-controller
+  namespace: cima-networking
+spec:
+  selector:
+    app: traefik-ingress-controller
+  ports:
+    - protocol: TCP
+      port: 443
+      name: websecure
+      nodePort: 30443
+  type: NodePort
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: traefik-dashboard-service
+  namespace: cima-networking
+spec:
+  selector:
+    app: traefik-ingress-controller
+  ports:
+  - port: 8080
+    name: admin

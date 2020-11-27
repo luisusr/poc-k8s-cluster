@@ -1,0 +1,10 @@
+
+${AnsiColor.BRIGHT_BLUE} ██████╗██╗███╗   ███╗ █████╗ ${AnsiColor.DEFAULT}
+${AnsiColor.BRIGHT_BLUE}██╔════╝██║████╗ ████║██╔══██╗${AnsiColor.DEFAULT}
+${AnsiColor.BRIGHT_BLUE}██║     ██║██╔████╔██║███████║${AnsiColor.DEFAULT}
+${AnsiColor.BRIGHT_BLUE}██║     ██║██║╚██╔╝██║██╔══██║${AnsiColor.DEFAULT}
+${AnsiColor.BRIGHT_BLUE}╚██████╗██║██║ ╚═╝ ██║██║  ██║${AnsiColor.DEFAULT}
+${AnsiColor.BRIGHT_BLUE} ╚═════╝╚═╝╚═╝     ╚═╝╚═╝  ╚═╝${AnsiColor.DEFAULT}
+       
+cima-mspocws
+

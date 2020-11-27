@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cima-mspocws-nxrm-app
+  namespace: cima-dev
+  labels:
+    app: cima-mspocws-nxrm-app
+spec:
+  selector:
+    app: cima-mspocws-nxrm-app
+  ports:
+  - name: http
+    port: 9080

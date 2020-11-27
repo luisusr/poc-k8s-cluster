@@ -1,0 +1,25 @@
+#!/bin/bash
+#comprobamos si existe proxy en donde se este construyendo la imagen
+#NOTA: verificar si cambia la definicion "http proxy" con la version de docker que se este utilizando
+#En dado caso, ajustar el parametro.
+CHECK_PROXY="$(docker info | grep -i 'http proxy')"
+if [ "$CHECK_PROXY" ]; then
+	DOCKER_PROXY=$(echo $CHECK_PROXY | awk -F': ' '{print $NF}')
+	docker build --build-arg http_proxy=$DOCKER_PROXY -t registry:5000/openjdk8-centos7 .
+else 
+	docker build -t registry:5000/openjdk8-centos7 .
+fi
+
+docker push registry:5000/openjdk8-centos7
+
+docker rmi $(docker images -aq -f dangling=true)
+
+#Eliminamos capas desasignadas en registry. Este proceso es para limpieza en registry local
+#de docker: (https://docs.docker.com/registry/) y es el estandar para el API v2
+#Nota: verificar operacion y/o documentacion para limpieza sobre para el tipo de registry 
+#que se este utilizando segun sea el caso (docker hub, nexus, etc).
+docker exec registry bin/registry garbage-collect /etc/docker/registry/config.yml -m
+docker exec registry find /var/lib/registry -type d -depth -exec rmdir -p {} + 2>/dev/null
+
+kubectl apply -f kubernetes/
+

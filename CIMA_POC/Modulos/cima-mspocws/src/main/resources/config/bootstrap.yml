@@ -1,0 +1,5 @@
+spring:
+    application:
+        name: cima-mspocws
+    profiles:
+        active: #spring.profiles.active#
