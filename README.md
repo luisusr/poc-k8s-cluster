@@ -1,7 +1,7 @@
 # poc-k8s-cluster
 version 2 repositorio  anterior plantilla-cluster
 
-Proyecto base que cuenta con despliegues de componentes necesarios para control sobre una solucion completa basada en arquitecturas orientadas a microservicios y en entornos distribuidos. El cual se despliega sobre un cluster de kubernetes como plataforma orquestador y runtime de Docker para ejecucion de contenedores en los nodos los cuales incluyen.
+Proyecto base que cuenta con despliegues de componentes necesarios para control sobre una solucion completa basada en arquitecturas orientadas a microservicios y en entornos distribuidos. El cual se despliega sobre un cluster de kubernetes como plataforma orquestador y runtime de Docker para ejecucion de contenedores en los nodos. El cual contiene los siguientes componentes:
 
 * Balanceador de carga (Traefik + SSL/TLS para HTTPS)
 * Componente de monitorizacion de trazas (EFK + Securizacion con X-Pack)
