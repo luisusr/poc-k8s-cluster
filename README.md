@@ -41,7 +41,8 @@ Agregar las siguientes entradas al archivo **hosts**:\
 127.0.0.1 cima-mspocws-test.cima.es\
 127.0.0.1 prometheus.cima.es\
 127.0.0.1 grafana.cima.es\
-127.0.0.1 jaeger.cima.es
+127.0.0.1 jaeger.cima.es\
+127.0.0.1 dashboard.cima.es
 
 Realizar la prueba abriendo el navegador entrado por conexion segura https a cualquiera de los sitios y por el puerto seguro del NodePort de acceso al balanceador de carga que en este caso es el **30443**.\
 Ejemplo: https://dashboard.cima.es:30443
