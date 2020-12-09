@@ -45,9 +45,9 @@ Agregar las siguientes entradas al archivo **hosts**:\
 127.0.0.1 dashboard.cima.es
 
 USUARIOS\
-kibana: elastic/cimadmin123\
-traefik: admin/cimadmin123\
-grafana: admin/admin por defecto. En el primer login se manda a la pantalla de cambio de contraseña si se desea cambiar en el momento, si no se puede cambiar despues en preferencias de usuario.
+**kibana:** elastic/cimadmin123\
+**traefik:** admin/cimadmin123\
+**grafana:** admin/admin por defecto. En el primer login se manda a la pantalla de cambio de contraseña si se desea cambiar en el momento, si no se puede cambiar despues en preferencias de usuario.
 
 Para importar los dashboards de grafana. Hay 2 ejemplos dentro de la ruta: Componentes_core/kubernetes/grafana/dashboards. Simplemente seleccionando la opcion: **Upload JSON file** dentro de la seccion import dashboard y navegar hasta la ruta anteriormente mencionada.
 
