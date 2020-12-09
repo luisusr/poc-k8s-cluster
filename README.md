@@ -33,7 +33,7 @@ PARA DESPLEGAR MICROSERVICIO DE PRUEBA
 Una vez instalado el cluster y desplegados los componentes, es necesario importar el certificado publico en el navegador que se encuentra en el archivo **ca.pem** en el directorio Componentes_core/kubernetes/traefik/tls. Para conexion segura ssl.\
 **NOTA:** Es probable que en las versiones mas recientes de **Mac OS** "Catalina" y "Big Sur" se siga mostrando como sitio inseguro y en el caso de Chrome el siguiente error: ERR_CERT_VALIDITY_TOO_LONG; a pesar de haber sido agregado el certificado, esto debido a las [politicas](https://support.apple.com/en-us/HT210176) que tiene establecidas Mac OS para certificados de confianza y en este repositorio, el certificado de prueba que he generado y autofirmado, le he establecido una caducidad para 10 años, lo cual no entra dentro de los requerimientos. Para el caso de **Windows 10**, se ha probado con la ultima actualizacion en los navegadores Chrome y Edge y acepta el certificado sin error alguno.
 
-Agregar las siguientes entradas al archivo **hosts**
+Agregar las siguientes entradas al archivo **hosts**:\
 127.0.0.1 traefik.cima.es\
 127.0.0.1 kibana.cima.es\
 127.0.0.1 cima-mspocws-dev.cima.es\
