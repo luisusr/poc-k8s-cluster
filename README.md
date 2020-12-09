@@ -44,7 +44,7 @@ Agregar las siguientes entradas al archivo **hosts**:\
 127.0.0.1 jaeger.cima.es\
 127.0.0.1 dashboard.cima.es
 
-Realizar la prueba abriendo el navegador entrado por conexion segura https a cualquiera de los sitios y por el puerto seguro del NodePort de acceso al balanceador de carga que en este caso es el **30443**.\
+Realizar la prueba abriendo el navegador entrado por conexion segura https a cualquiera de los sitios y por el puerto seguro del NodePort de acceso al controlador del balanceador de carga que en este caso es el **30443**.\
 Ejemplo: https://dashboard.cima.es:30443
 
 Si se realiza la prueba desde otra maquina, es necesario agregar las mimas rutas en el archivo hosts de la maquina en donde se este probando y cambiar la ip por la direccion de destino donde se haya desplegado el cluster. Es necesario que se encuentren dentro de la misma red las maquinas. O bien abrir el puerto de conexion segura del NodePort del balanceador a traves de una regla para ip publica; en caso de que la maquina de pruebas se encuentre dentro de una red diferente
