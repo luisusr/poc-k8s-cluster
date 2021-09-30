@@ -11,7 +11,7 @@
 	<description>CIMA Comun</description>
 
 	<properties>
-		<java.version>1.8</java.version>
+	    <java.version>1.8</java.version>
 		<spring-cloud.version>Hoxton.SR1</spring-cloud.version>
 		<spring-boot.version>2.2.2.RELEASE</spring-boot.version>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -112,6 +112,16 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.0</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

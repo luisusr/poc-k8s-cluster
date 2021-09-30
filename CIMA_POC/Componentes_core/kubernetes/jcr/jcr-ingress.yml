@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jcr-ingress
+  namespace: cima-jcr
+  annotations:
+      kubernetes.io/ingress.class: traefik
+spec:
+  tls:
+  - hosts:
+    - jcr.cima.es
+  rules:
+    - host: jcr.cima.es
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: cima-jfrog-jcr
+                port:
+                  number: 8082

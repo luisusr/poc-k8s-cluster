@@ -1,6 +1,6 @@
 #!/bin/bash
-mvn -f ../cima-comun/pom.xml clean install
-mvn clean package
+mvn -f Modulos/cima-comun/pom.xml clean install
+mvn -f Modulos/cima-mspocws/pom.xml clean package
 
 #comprobamos si existe proxy en donde se este construyendo la imagen
 #NOTA: verificar si cambia la definicion "http proxy" con la version de docker que se este utilizando
@@ -8,9 +8,9 @@ mvn clean package
 CHECK_PROXY="$(docker info | grep -i 'http proxy')"
 if [ "$CHECK_PROXY" ]; then
 	DOCKER_PROXY=$(echo $CHECK_PROXY | awk -F': ' '{print $NF}')
-	docker build --build-arg http_proxy=$DOCKER_PROXY -f src/main/docker/oc/Dockerfile -t nexus.tirea.es:8070/cima-mspocws .
+	docker build --build-arg http_proxy=$DOCKER_PROXY -f Modulos/cima-mspocws/src/main/docker/oc/Dockerfile -t nexus.tirea.es:8070/cima-mspocws .
 else 
-	docker build -f src/main/docker/oc/Dockerfile -t nexus.tirea.es:8070/cima-mspocws .
+	docker build -f Modulos/cima-mspocws/src/main/docker/oc/Dockerfile -t nexus.tirea.es:8070/cima-mspocws .
 fi
 
 docker push nexus.tirea.es:8070/cima-mspocws
@@ -24,7 +24,7 @@ EXISTS=false
 if kubectl get deployments -n=cima-dev | grep -q cima-mspocws-nxrm-app; then
 	 EXISTS=true
 fi
-kubectl apply -f src/main/docker/oc/kubernetes/nxrm/
+kubectl apply -f Modulos/cima-mspocws/src/main/docker/oc/kubernetes/nxrm/
 
 #si existe la aplicacion la parcha y se actualiza
 if [ "$EXISTS" == true ]; then

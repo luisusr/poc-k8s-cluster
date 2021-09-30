@@ -1,0 +1,18 @@
+#!/bin/bash
+#NOTA: para aprovisionar volumenes persistentes en el directorio
+#ya que para volumenes locales no esta soportado el aprovisionamiento dinamico
+#ver: https://kubernetes.io/docs/concepts/storage/volumes/#local
+#Si se despliega el cluster en docker for desktop en ambientes win y macOS
+#comentar la llamada a este script dentro de deploy y generar la ruta completa del volumen
+#manualmente bajo el directorio definido FILE SHARING dentro de las preferencias de 
+#docker for desktop. Generar el directorio completo. Bajo la ruta pvdata001 
+#se almacenta el lo que est aprovisionador y /var/nfs/data donde se encuentran
+#los volumenes persistentes dinamicos. Todo esto en caso en caso de local storage. 
+#Si se cuenta con almacenamiento cloud (google,azure,cdk, etc..), apuntar al
+#storage class en el PVC del servidor nfs: nfs-server-local-pvc.yml segun sea
+#el caso y no ejecutar este script ni tampoco el contenido dentro de: volumes/
+#mismo caso aplica para docker for desktop en ambientes win y macOS
+sudo mkdir -p /mnt/data/pvdata001/var/nfs/data
+#for vol in pvdata001 pvdata002 pvdata003 pvdata004; do
+#   sudo mkdir -p /mnt/data/$vol
+#done

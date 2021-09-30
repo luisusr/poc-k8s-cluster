@@ -5,16 +5,22 @@ kubectl delete namespace cima-logging
 kubectl delete namespace cima-networking
 kubectl delete namespace cima-monitoring
 kubectl delete namespace cima-tracing
+kubectl delete namespace cima-registry
+kubectl delete namespace cima-jcr
 kubectl delete namespace kubernetes-dashboard
-kubectl get pv | grep Released | awk '{print $1}' | xargs kubectl delete pv
+kubectl delete deploy nfs-client-provisioner -n cima-nfs
+kubectl delete namespace cima-nfs
 kubectl delete clusterrole fluentd
 kubectl delete clusterrolebinding fluentd
 kubectl delete clusterrole traefik-ingress-controller
 kubectl delete clusterrolebinding traefik-ingress-controller
 kubectl delete clusterrole prometheus
 kubectl delete clusterrolebinding prometheus
-kubectl delete clusterrole prometheus
-kubectl delete clusterrolebinding prometheus
 kubectl delete clusterrole kubernetes-dashboard
 kubectl delete clusterrolebinding kubernetes-dashboard
-
+kubectl delete clusterrolebinding kubernetes-dashboard-admin
+kubectl delete clusterrole nfs-client-provisioner-runner
+kubectl delete clusterrolebinding nfs-client-provisioner-runner
+kubectl delete sc managed-nfs-storage
+kubectl delete sc local-storage
+kubectl get pv | grep Released | awk '{print $1}' | xargs kubectl delete pv

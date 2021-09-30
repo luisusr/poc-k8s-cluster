@@ -1,0 +1,6 @@
+#!/bin/bash
+mvn -f Modulos/cima-comun/pom.xml clean install
+mvn -f Modulos/cima-comun/pom.xml clean eclipse:clean eclipse:eclipse
+mvn -f Modulos/cima-mspocws/pom.xml clean install
+mvn -f Modulos/cima-mspocws/pom.xml clean eclipse:clean eclipse:eclipse
+

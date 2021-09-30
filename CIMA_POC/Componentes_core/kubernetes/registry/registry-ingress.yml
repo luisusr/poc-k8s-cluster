@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: registry-ingress
+  namespace: cima-registry
+  annotations:
+      kubernetes.io/ingress.class: traefik
+spec:
+  tls:
+  - hosts:
+    - registry.cima.es
+  rules:
+    - host: registry.cima.es
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: registry
+                port:
+                  number: 5000

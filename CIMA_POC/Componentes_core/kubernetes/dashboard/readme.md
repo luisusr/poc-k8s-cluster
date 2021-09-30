@@ -28,4 +28,3 @@ ca.crt:     1066 bytes
 
 COPIAR Y PEGAR el sha entero del campo **token**\
 referencia: https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md
-

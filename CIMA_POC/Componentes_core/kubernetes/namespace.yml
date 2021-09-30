@@ -31,4 +31,19 @@ metadata:
 kind: Namespace
 apiVersion: v1
 metadata:
+  name: cima-nfs
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: cima-registry
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: cima-jcr
+---
+kind: Namespace
+apiVersion: v1
+metadata:
   name: kubernetes-dashboard

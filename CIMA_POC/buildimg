@@ -1,0 +1,27 @@
+#!/bin/bash
+#==============FASE DE CONSTRUCCION IMAGEN Y ENVIO A REGISTRY=============
+mvn -f Modulos/cima-comun/pom.xml clean install
+mvn -f Modulos/cima-mspocws/pom.xml clean package
+
+#comprobamos si existe proxy en donde se este construyendo la imagen
+#NOTA: verificar si cambia la definicion "http proxy" con la version de docker que se este utilizando
+#En dado caso, ajustar el parametro.
+CHECK_PROXY="$(docker info | grep -i 'http proxy')"
+if [ "$CHECK_PROXY" ]; then
+	DOCKER_PROXY=$(echo $CHECK_PROXY | awk -F': ' '{print $NF}')
+	docker build --build-arg http_proxy=$DOCKER_PROXY -f Modulos/cima-mspocws/src/main/docker/Dockerfile -t registry.cima.es:30443/cima-mspocws .
+else 
+	docker build -f Modulos/cima-mspocws/src/main/docker/Dockerfile -t registry.cima.es:30443/cima-mspocws .
+fi
+
+docker push registry.cima.es:30443/cima-mspocws
+
+
+
+#==============FASE DE LIMPIEZA DE CAPAS EN FS Y EN REGISTRY===============
+#Eliminamos capas de construcciones anteriores. Para limpieza en fs en local
+#Este mismo proceso deberia de ejecutarse en c/u de los nodos de manera periodica
+#y dependiendo del numero de construcciones sobre un mismo tag
+#y si la integracion continua se ejecuta en base commit
+docker rmi $(docker images -aq -f dangling=true) 2>/dev/null
+

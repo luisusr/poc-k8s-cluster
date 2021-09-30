@@ -1,12 +1,27 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: pv001
+  name: pv-local-storage001
 spec:
   capacity:
-    storage: 5Gi
+    storage: 100Gi
+  volumeMode: Filesystem
   accessModes:
-    - ReadWriteOnce
-  hostPath:
-    path: "/mnt/data/pvdata001"
-  storageClassName: grafana
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-storage
+  claimRef:
+    name: nfs-data-local-provisioner
+    namespace: cima-nfs
+  local:
+    path: /mnt/data/pvdata001
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          # cambiar por el/los planos de control
+          # donde se despliege el servidor nfs
+          - f30-master

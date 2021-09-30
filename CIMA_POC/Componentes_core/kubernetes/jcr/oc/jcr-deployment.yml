@@ -1,0 +1,43 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: cima-jfrog-jcr
+  namespace: cima-jcr
+  labels:
+    app: cima-jfrog-jcr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cima-jfrog-jcr
+  template:
+    metadata:
+      labels:
+        app: cima-jfrog-jcr
+    spec:
+      containers:
+        - name: cima-jfrog-jcr
+          image: releases-docker.jfrog.io/jfrog/artifactory-jcr
+          ports:
+          - name: rest
+            containerPort: 8081
+          - name: http
+            containerPort: 8082
+          resources:
+            requests: 
+              cpu: 500m
+          volumeMounts:
+            - name: jcr-storage
+              mountPath: /var/opt/jfrog/artifactory
+      securityContext:
+        runAsUser: 1000781030
+      volumes:
+        - name: jcr-storage
+          persistentVolumeClaim:
+            claimName: jcr-storage
+      nodeSelector:
+        kubernetes.io/hostname: worker-3
+      tolerations:
+        - key: "jfrog"
+          operator: "Exists"
+          effect: "NoSchedule"

@@ -1,10 +1,9 @@
 
-${AnsiColor.BRIGHT_BLUE} ██████╗██╗███╗   ███╗ █████╗ ${AnsiColor.DEFAULT}
-${AnsiColor.BRIGHT_BLUE}██╔════╝██║████╗ ████║██╔══██╗${AnsiColor.DEFAULT}
-${AnsiColor.BRIGHT_BLUE}██║     ██║██╔████╔██║███████║${AnsiColor.DEFAULT}
-${AnsiColor.BRIGHT_BLUE}██║     ██║██║╚██╔╝██║██╔══██║${AnsiColor.DEFAULT}
-${AnsiColor.BRIGHT_BLUE}╚██████╗██║██║ ╚═╝ ██║██║  ██║${AnsiColor.DEFAULT}
-${AnsiColor.BRIGHT_BLUE} ╚═════╝╚═╝╚═╝     ╚═╝╚═╝  ╚═╝${AnsiColor.DEFAULT}
-       
-cima-mspocws
+${AnsiColor.BRIGHT_BLUE}  ____ ___ __  __    _         __  __ ____  ____   ___   ______        ______  ${AnsiColor.DEFAULT} 
+${AnsiColor.BRIGHT_BLUE} / ___|_ _|  \/  |  / \       |  \/  / ___||  _ \ / _ \ / ___\ \      / / ___| ${AnsiColor.DEFAULT}
+${AnsiColor.BRIGHT_BLUE}| |    | || |\/| | / _ \ _____| |\/| \___ \| |_) | | | | |    \ \ /\ / /\___ \ ${AnsiColor.DEFAULT}
+${AnsiColor.BRIGHT_BLUE}| |___ | || |  | |/ ___ \_____| |  | |___) |  __/| |_| | |___  \ V  V /  ___) |${AnsiColor.DEFAULT}
+${AnsiColor.BRIGHT_BLUE} \____|___|_|  |_/_/   \_\    |_|  |_|____/|_|    \___/ \____|  \_/\_/  |____/ ${AnsiColor.DEFAULT}
+
+cima-mspocws ver ${spring-boot.version}
 

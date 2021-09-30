@@ -1,0 +1,57 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: cima-jfrog-jcr
+  namespace: cima-jcr
+  labels:
+    app: cima-jfrog-jcr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cima-jfrog-jcr
+  template:
+    metadata:
+      labels:
+        app: cima-jfrog-jcr
+    spec:
+      containers:
+        - name: cima-jfrog-jcr
+          image: releases-docker.jfrog.io/jfrog/artifactory-jcr
+          ports:
+          - name: rest
+            containerPort: 8081
+          - name: http
+            containerPort: 8082
+          resources:
+            requests: 
+              cpu: 500m
+          volumeMounts:
+            - name: jcr-storage
+              mountPath: /var/opt/jfrog/artifactory
+#     securityContext:
+#       fsGroup: 1030
+#       runAsUser: 1030
+#     initContainers:
+#     - name: jcr-storage-permission-fix
+#       image: busybox
+#       command:
+#       - sh
+#       - -c
+#       - chown -R 1030:1030 /var/opt/jfrog/artifactory
+#       securityContext:
+#         runAsUser: 0
+#       volumeMounts:
+#       - name: jcr-storage
+#         mountPath: /var/opt/jfrog/artifactory
+      volumes:
+        - name: jcr-storage
+          persistentVolumeClaim:
+            claimName: jcr-storage
+      # Seleccionamos un nodo de infraestructura o plano de control
+      # con suficiente memoria para desplegar el artifactory
+      # y evitar con esto un desbordamiento de RAM en alguno de los workers.
+      # Verificar la anotacion y la etiqueta segun el ambiente/plataforma
+      # donde se este desplegando y ajustarlo segun sea el caso.
+      nodeSelector:
+        kubernetes.io/hostname: f30-master

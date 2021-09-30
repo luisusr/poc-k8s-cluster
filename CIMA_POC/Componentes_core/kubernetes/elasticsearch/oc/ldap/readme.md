@@ -18,6 +18,6 @@ PUT /_security/role_mapping/admins
 ```
 
 
-Referencias:
-[https://www.elastic.co/guide/en/elasticsearch/reference/current/start-trial.html]
-[https://www.elastic.co/guide/en/elasticsearch/reference/current/role-mapping-resources.html]
+Referencias:\
+https://www.elastic.co/guide/en/elasticsearch/reference/current/start-trial.html \
+https://www.elastic.co/guide/en/elasticsearch/reference/current/role-mapping-resources.html

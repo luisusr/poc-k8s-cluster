@@ -1,0 +1,21 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: nfs-server
+  namespace: cima-nfs
+spec:
+  # se establece ip fija en el servicio ya que el aprovisionador de volumenes persistentes no resuelve por DNS interno.
+  # En dado caso se tendria que declarar el servicio sin ip (headless) lo cual no seria conveniente
+  # si se necesitase escalar el servidor NFS. En caso de fallo verificar si se encuentra algun otro servicio
+  # existente ejecutando con la misma ip que se establece en este mismo y bien reiniciar el servicio en conflicto
+  # para que establezca diferente direccion o cambiar valores ip dentro del rango con el prefijo 10.100.x.x 
+  clusterIP: 10.100.211.89
+  ports:
+    - name: nfs
+      port: 2049
+    - name: mountd
+      port: 20048
+    - name: rpcbind
+      port: 111
+  selector:
+    app: nfs-server

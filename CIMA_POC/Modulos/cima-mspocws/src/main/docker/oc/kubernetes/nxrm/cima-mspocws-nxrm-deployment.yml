@@ -5,7 +5,7 @@ metadata:
   namespace: cima-dev
 spec:
   revisionHistoryLimit: 0
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: cima-mspocws-nxrm-app
@@ -43,11 +43,11 @@ spec:
               fieldPath: status.hostIP
         resources:
           requests:
-            memory: 512m
-            cpu: 250m
+            memory: "256Mi"
+            cpu: "100m"
           limits:
-            memory: 1Gi
-            cpu: 1000m
+            memory: "1024Mi"
+            cpu: "1000m"
         ports:
         - name: http
           containerPort: 9080

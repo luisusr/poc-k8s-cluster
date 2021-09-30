@@ -2,7 +2,7 @@ FROM centos:7
 
 RUN sed -i '/override_install_langs/d' /etc/yum.conf \
  && yum -y update && yum reinstall -y glibc-common \
- && yum -y install java-1.8.0-openjdk-devel nc telnet bind-utils openssh-clients ftp nano \
+ && yum -y install java-1.8.0-openjdk-devel nc telnet bind-utils openssh-clients net-tools ftp nano \
  && yum clean all \
  && rm -rf /var/cache/yum
 

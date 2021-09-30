@@ -1,0 +1,20 @@
+#!/bin/bash
+
+#Este script esta destinado como plantilla de base para fases de construccion y limpieza de imagenes
+#y para verificar y comprobar el almacenamiento que va generando 
+#con cada construccion en cualquier registy local  dado(registry, nexus...)
+#y servira para realizar las pruebas de comandos necesarios de limpieza tanto para 
+#construccion local, asi como en registry donde se este publicando en este caso
+#y verificar que se realiza la correcta eliminacion de blobs de imagenes que ya no estan referenciados
+#para evitar que se llene el registry y con ello se genere un error de almacenamiento con las 
+#nuevas construcciones
+
+
+./buildimg
+
+#Eliminamos capas desasignadas en registry. Este proceso es para limpieza en registry local
+#de docker: (https://docs.docker.com/registry/) desplegado dentro del cluster para el API v2
+#Nota: verificar operacion y/o documentacion para limpieza sobre para el tipo de registry 
+#que se este utilizando segun sea el caso (docker hub, nexus, etc).
+kubectl exec deploy/registry -n cima-registry -- bin/registry garbage-collect /etc/docker/registry/config.yml -m
+kubectl exec deploy/registry -n cima-registry -- find /var/lib/registry -type d -depth -exec rmdir -p {} + 2>/dev/null

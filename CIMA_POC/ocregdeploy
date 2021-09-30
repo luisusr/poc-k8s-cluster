@@ -1,6 +1,6 @@
 #!/bin/bash
-mvn -f ../cima-comun/pom.xml clean install
-mvn clean package
+mvn -f Modulos/cima-comun/pom.xml clean install
+mvn -f Modulos/cima-mspocws/pom.xml clean package
 
 #comprobamos si existe proxy en donde se este construyendo la imagen
 #NOTA: verificar si cambia la definicion "http proxy" con la version de docker que se este utilizando
@@ -8,9 +8,9 @@ mvn clean package
 CHECK_PROXY="$(docker info | grep -i 'http proxy')"
 if [ "$CHECK_PROXY" ]; then
 	DOCKER_PROXY=$(echo $CHECK_PROXY | awk -F': ' '{print $NF}')
-	docker build --build-arg http_proxy=$DOCKER_PROXY -f src/main/docker/oc/Dockerfile -t docker-registry-openshift-image-registry.apps.tirea-pre.cloudgarden.telefonica.com/cima-dev/cima-mspocws .
+	docker build --build-arg http_proxy=$DOCKER_PROXY -f Modulos/cima-mspocws/src/main/docker/oc/Dockerfile -t docker-registry-openshift-image-registry.apps.tirea-pre.cloudgarden.telefonica.com/cima-dev/cima-mspocws .
 else 
-	docker build -f src/main/docker/oc/Dockerfile -t docker-registry-openshift-image-registry.apps.tirea-pre.cloudgarden.telefonica.com/cima-dev/cima-mspocws .
+	docker build -f Modulos/cima-mspocws/src/main/docker/oc/Dockerfile -t docker-registry-openshift-image-registry.apps.tirea-pre.cloudgarden.telefonica.com/cima-dev/cima-mspocws .
 fi
 
 docker push docker-registry-openshift-image-registry.apps.tirea-pre.cloudgarden.telefonica.com/cima-dev/cima-mspocws
@@ -20,7 +20,7 @@ EXISTS=false
 if kubectl get deployments -n=cima-dev | grep -q cima-mspocws-app; then
 	 EXISTS=true
 fi
-kubectl apply -f src/main/docker/oc/kubernetes/
+kubectl apply -f Modulos/cima-mspocws/src/main/docker/oc/kubernetes/
 
 #si existe la aplicacion la parcha y se actualiza
 if [ "$EXISTS" == true ]; then

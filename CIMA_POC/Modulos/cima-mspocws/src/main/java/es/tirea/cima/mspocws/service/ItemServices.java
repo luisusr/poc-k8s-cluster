@@ -40,7 +40,7 @@ public class ItemServices {
 	     item.setHostname("Hostname: "+hostname);
 	     item.setLanguage("Idioma local: "+language);
 	     item.setCountry("País local: "+ country);
-	     log.info("Obteniendo Item con id: "+item.getId()+ " Idioma: "+language + " País: "+country);
+	     log.info("Obteniendo Item con id: "+item.getId()+ " Idioma: "+language + " País: "+country + " Y desde el host: " + hostname);
 	        return item;
 	}
 	

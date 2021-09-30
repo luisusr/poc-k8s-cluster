@@ -6,9 +6,9 @@ metadata:
   labels:
     app: grafana
 spec:
-  storageClassName: grafana
+  storageClassName: managed-nfs-storage
   accessModes:
-    - "ReadWriteOnce"
+    - "ReadWriteMany"
   resources:
     requests:
       storage: 5Gi

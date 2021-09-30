@@ -1,0 +1,32 @@
+#!/bin/bash
+mvn -f Modulos/cima-comun/pom.xml clean install
+mvn -f Modulos/cima-mspocws/pom.xml clean package
+
+#comprobamos si existe proxy en donde se este construyendo la imagen
+#NOTA: verificar si cambia la definicion "http proxy" con la version de docker que se este utilizando
+#En dado caso, ajustar el parametro.
+CHECK_PROXY="$(docker info | grep -i 'http proxy')"
+if [ "$CHECK_PROXY" ]; then
+	DOCKER_PROXY=$(echo $CHECK_PROXY | awk -F': ' '{print $NF}')
+	docker build --build-arg http_proxy=$DOCKER_PROXY -f Modulos/cima-mspocws/src/main/docker/oc/Dockerfile -t nexus.tirea.es:8070/cima-mspocws .
+else 
+	docker build -f Modulos/cima-mspocws/src/main/docker/oc/Dockerfile -t nexus.tirea.es:8070/cima-mspocws .
+fi
+
+docker push nexus.tirea.es:8070/cima-mspocws
+
+
+
+docker rmi $(docker images -aq -f dangling=true)
+
+#verificamos que la aplicacion ya exista para que no la parche al primer despliegue
+EXISTS=false
+if oc get deployments -n=cima-dev | grep -q cima-mspocws-nxrm-app; then
+	 EXISTS=true
+fi
+oc apply -f Modulos/cima-mspocws/src/main/docker/oc/kubernetes/nxrm/
+
+#si existe la aplicacion la parcha y se actualiza
+if [ "$EXISTS" == true ]; then
+	 oc patch deploy cima-mspocws-nxrm-app -p '{"spec":{"template":{"metadata":{"labels":{"buildate":"'$(date '+%d-%m-%Y_%H.%M.%S.%3N')'","version":"latest"}}}}}' -n=cima-dev
+fi

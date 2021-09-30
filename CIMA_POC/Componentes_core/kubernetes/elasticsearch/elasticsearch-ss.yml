@@ -5,7 +5,7 @@ metadata:
   namespace: cima-logging
 spec:
   serviceName: elasticsearch-cluster
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: elasticsearch
@@ -23,7 +23,7 @@ spec:
           name: elastic-config
       containers:
       - name: elasticsearch
-        image: docker.elastic.co/elasticsearch/elasticsearch:7.10.0
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.14.1
         resources:
             limits:
               cpu: 1000m
@@ -54,10 +54,9 @@ spec:
                 fieldPath: metadata.name
           - name: NODE_LIST
             value: "elasticsearch-0.elasticsearch-cluster.cima-logging,
-                    elasticsearch-1.elasticsearch-cluster.cima-logging,
-                    elasticsearch-2.elasticsearch-cluster.cima-logging"
+                    elasticsearch-1.elasticsearch-cluster.cima-logging"
           - name: MASTER_NODES
-            value: "elasticsearch-0,elasticsearch-1,elasticsearch-2"
+            value: "elasticsearch-0,elasticsearch-1"
           - name: ES_JAVA_OPTS
             value: "-Xms512m -Xmx512m"
           - name: ELASTIC_PASSWORD
@@ -65,18 +64,25 @@ spec:
       securityContext:
         fsGroup: 1000
         runAsUser: 1000
-      initContainers:
-      - name: fix-permissions
-        image: busybox
-        command:
-        - sh
-        - -c
-        - chown -R 1000:1000 /usr/share/elasticsearch/data
-        securityContext:
-          runAsUser: 0
-        volumeMounts:
-        - name: data
-          mountPath: /usr/share/elasticsearch/data
+#     initContainers:
+#     - name: fix-permissions
+#       image: busybox
+#       command:
+#       - sh
+#       - -c
+#       - chown -R 1000:1000 /usr/share/elasticsearch/data
+#       securityContext:
+#         runAsUser: 0
+#       volumeMounts:
+#       - name: data
+#         mountPath: /usr/share/elasticsearch/data
+      # Seleccionamos un nodo de infraestructura o plano de control
+      # con suficiente memoria para desplegar el cluster de elasticsearch
+      # y evitar con esto un desbordamiento de RAM en alguno de los workers.
+      # Verificar la anotacion y la etiqueta segun el ambiente/plataforma
+      # donde se este desplegando y ajustarlo segun sea el caso.
+      nodeSelector:
+        kubernetes.io/hostname: f30-master
   volumeClaimTemplates:
   - metadata:
       name: data
@@ -85,7 +91,7 @@ spec:
     spec:
       accessModes:
         - ReadWriteOnce
-      storageClassName: elastic
+      storageClassName: managed-nfs-storage
       resources:
         requests:
           storage: 10Gi
