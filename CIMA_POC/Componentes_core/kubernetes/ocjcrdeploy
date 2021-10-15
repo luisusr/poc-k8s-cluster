@@ -1,7 +1,7 @@
 #!/bin/bash
 # ./ocreg
-kubectl create secret generic jcr-secret --from-file=.dockerconfigjson=jcr/conf/config.json  --type=kubernetes.io/dockerconfigjson -n cima-dev
-kubectl create secret generic jcr-secret --from-file=.dockerconfigjson=jcr/conf/config.json  --type=kubernetes.io/dockerconfigjson -n cima-test
+kubectl create secret generic jcr-secret --from-file=.dockerconfigjson=jcr/conf/oc/config.json  --type=kubernetes.io/dockerconfigjson -n cima-dev
+kubectl create secret generic jcr-secret --from-file=.dockerconfigjson=jcr/conf/oc/config.json  --type=kubernetes.io/dockerconfigjson -n cima-test
 #kubectl create secret generic jcr-secret --from-file=.dockerconfigjson=jcr/conf/config.json  --type=kubernetes.io/dockerconfigjson -n cima-hmg
 #kubectl create secret generic jcr-secret --from-file=.dockerconfigjson=jcr/conf/config.json  --type=kubernetes.io/dockerconfigjson -n cima-pre
 kubectl apply -f jcr/oc/

@@ -1,0 +1,21 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                echo 'comun Building..'
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'comun Testing..'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'comun Deploying....'
+            }
+        }
+    }
+}
