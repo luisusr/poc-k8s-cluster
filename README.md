@@ -30,7 +30,7 @@ TO DEPLOY TEST MICROSERVICE
 2. Linux and Mac OS: Inside the module directory Modules / pocws execute: ** build **
 3. Windows: Run content within file
 
-Once the cluster is installed and the components have been deployed, it is necessary to import the public certificate in the browser that can be found in the ** ca.pem ** file in the Components_core / kubernetes / Juguefik / tls directory. For secure ssl connection.
+Once the cluster is installed and the components have been deployed, it is necessary to import the public certificate in the browser that can be found in the ** ca.pem ** file in the Components_core / kubernetes / traefik / tls directory. For secure ssl connection.
 
 ** NOTE: ** It is likely that in the most recent versions of ** Mac OS ** "Catalina" and "Big Sur" will continue to show as an insecure site and in the case of Chrome the following error: ERR_CERT_VALIDITY_TOO_LONG; Despite having added the certificate, this due to the [policies] (https://support.apple.com/en-us/HT210176) that has established Mac OS for trusted certificates and in this repository, the certificate of proof that I have generated and self-signed, I have established an expiration for 10 years, which does not fall within the requirements. In the case of ** Windows 10 **, it has been tested with the latest update in Chrome and Edge browsers and accepts the certificate without any error.
 
