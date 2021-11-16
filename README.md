@@ -17,7 +17,7 @@ Requirements:
 * Container runtime (Docker)
 * [Run local registry] (https://docs.docker.com/registry/deploying/)
 
-In the case of linux, the installation is used from the kubernetes repository and starting a minimum control plane with the [kubeadm] tool (https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create- cluster-kubeadm /), for Mac OS and Windows you can use docker for desktop although for windows you have to execute the content of the scripts since they are bash (.sh)
+In the case of linux, the installation is used from the kubernetes repository and starting a minimum control plane with the [kubeadm] tool (https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/), for Mac OS and Windows you can use docker for desktop although for windows you have to execute the content of the scripts since they are bash (.sh)
 
 
 
