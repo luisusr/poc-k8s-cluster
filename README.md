@@ -1,75 +1,74 @@
 # poc-k8s-cluster
-version 2 repositorio  anterior plantilla-cluster
+version 2 old repository cluster-template
 
-Proyecto base que cuenta con despliegues de componentes necesarios para control sobre una solucion completa basada en arquitecturas orientadas a microservicios y en entornos distribuidos. El cual se despliega sobre un cluster de kubernetes como plataforma orquestador y runtime de Docker para ejecucion de contenedores en los nodos. El cual contiene los siguientes componentes:
+Base project that has deployments of components necessary to control a complete solution based on architectures oriented to microservices and in distributed environments. Which is deployed on a cluster of kubernetes as a Docker runtime and orchestrator platform for the execution of containers in the nodes. Which contains the following components:
 
-* Balanceador de carga (Traefik + SSL/TLS para HTTPS)
-* Componente de monitorizacion de trazas (EFK + Securizacion con X-Pack)
-* Componente de monitorizacion de cluster (Prometeo** + Grafana)
-* componente de trazabilidad (Jaeger Desarrollo)***
-* Kubernetes dashboard con ingress y RBAC cuenta de servicio administrador
-* Un microservicio de prueba con dependencias necesarias para interaccion con componentes
+* Load balancer (Traefik + SSL / TLS for HTTPS)
+* Trace monitoring component (EFK + Securization with X-Pack)
+* Cluster monitoring component (Prometheus ** + Grafana)
+* Traceability component (Jaeger Development) ***
+* Kubernetes dashboard with ingress and RBAC service account administrator
+* A test microservice with necessary dependencies for interaction with components
 
-Requisitos:
+Requirements:
 * Maven 3.x
 * Jdk 8
-* Kubernetes (kubeadm, kubelet 1.18**** y kubectl. Se recomienda instalacion con kubeadm en linux. Para Win y Mac OS es necesario instalar [Docker Desktop](https://www.docker.com/products/docker-desktop))  
+* Kubernetes (kubeadm, kubelet 1.18 **** and kubectl. Installation with kubeadm on linux is recommended. For Win and Mac OS it is necessary to install [Docker Desktop] (https://www.docker.com/products/docker-desktop ))
 * Container runtime (Docker)
-* [Ejecutar registry local](https://docs.docker.com/registry/deploying/)
+* [Run local registry] (https://docs.docker.com/registry/deploying/)
 
-Para el caso de linux se utiliza la instalacion desde el repositorio de kubernetes y arrancar un plano de control minimo con la herramienta [kubeadm](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/), para Mac OS y Windows se puede utilizar docker for desktop aunque para windows se tienen que ejecutar el contenido de los script ya que son bash (.sh)
+In the case of linux, the installation is used from the kubernetes repository and starting a minimum control plane with the [kubeadm] tool (https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create- cluster-kubeadm /), for Mac OS and Windows you can use docker for desktop although for windows you have to execute the content of the scripts since they are bash (.sh)
 
 
 
-PARA DESPLEGAR MODULOS CROSS
-* Linux y Mac OS: Dentro de directorio Componentes_core/kubernetes ejecutar: **deploy**
-* Windows: Ejectuar contenido dentro de archivo
+TO DEPLOY CROSS MODULES
+* Linux and Mac OS: Inside the Core Components / kubernetes directory execute: ** deploy **
+* Windows: Run content within file
 
-PARA DESPLEGAR MICROSERVICIO DE PRUEBA
-1. Instalar modulo de dependencias comun en directorio: Modulos/cima-comun: **mvn install**
-2. Linux y Mac OS: Dentro de directorio de modulo Modulos/pocws ejecutar: **build**
-3. Windows: Ejectuar contenido dentro de archivo
+TO DEPLOY TEST MICROSERVICE
+1. Install common dependencies module in directory: Modules / top-common: ** mvn install **
+2. Linux and Mac OS: Inside the module directory Modules / pocws execute: ** build **
+3. Windows: Run content within file
 
-Una vez instalado el cluster y desplegados los componentes, es necesario importar el certificado publico en el navegador que se encuentra en el archivo **ca.pem** en el directorio Componentes_core/kubernetes/traefik/tls. Para conexion segura ssl.
+Once the cluster is installed and the components have been deployed, it is necessary to import the public certificate in the browser that can be found in the ** ca.pem ** file in the Components_core / kubernetes / Juguefik / tls directory. For secure ssl connection.
 
-**NOTA:** Es probable que en las versiones mas recientes de **Mac OS** "Catalina" y "Big Sur" se siga mostrando como sitio inseguro y en el caso de Chrome el siguiente error: ERR_CERT_VALIDITY_TOO_LONG; a pesar de haber sido agregado el certificado, esto debido a las [politicas](https://support.apple.com/en-us/HT210176) que tiene establecidas Mac OS para certificados de confianza y en este repositorio, el certificado de prueba que he generado y autofirmado, le he establecido una caducidad para 10 años, lo cual no entra dentro de los requerimientos. Para el caso de **Windows 10**, se ha probado con la ultima actualizacion en los navegadores Chrome y Edge y acepta el certificado sin error alguno.
+** NOTE: ** It is likely that in the most recent versions of ** Mac OS ** "Catalina" and "Big Sur" will continue to show as an insecure site and in the case of Chrome the following error: ERR_CERT_VALIDITY_TOO_LONG; Despite having added the certificate, this due to the [policies] (https://support.apple.com/en-us/HT210176) that has established Mac OS for trusted certificates and in this repository, the certificate of proof that I have generated and self-signed, I have established an expiration for 10 years, which does not fall within the requirements. In the case of ** Windows 10 **, it has been tested with the latest update in Chrome and Edge browsers and accepts the certificate without any error.
 
-Agregar las siguientes entradas al archivo **hosts**:\
-127.0.0.1 traefik.cima.es\
-127.0.0.1 kibana.cima.es\
-127.0.0.1 cima-mspocws-dev.cima.es\
-127.0.0.1 cima-mspocws-test.cima.es\
-127.0.0.1 prometheus.cima.es\
-127.0.0.1 grafana.cima.es\
-127.0.0.1 jaeger.cima.es\
+Add the following entries to the ** hosts ** file: \
+127.0.0.1 bringfik.cima.es \
+127.0.0.1 kibana.cima.es \
+127.0.0.1 top-mspocws-dev.cima.es \
+127.0.0.1 top-mspocws-test.top.es \
+127.0.0.1 prometheus.cima.es \
+127.0.0.1 grafana.cima.es \
+127.0.0.1 jaeger.cima.es \
 127.0.0.1 dashboard.cima.es
 
-USUARIOS\
-**kibana:** elastic/cimadmin123\
-**traefik:** admin/cimadmin123\
-**grafana:** admin/admin por defecto. En el primer login se manda a la pantalla de cambio de contraseña si se desea cambiar en el momento, si no se puede cambiar despues en preferencias de usuario.\
-**dashboard:** Obtener token con el siguiente comando:\
-`kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep kubernetes-dashboard-token | awk '{print $1}')`\
-Tambien explicado en el readme del componente y para mas informacion en la ruta: Componentes_core/kubernetes/dashboard.
+USERS \
+** kibana: ** elastic / cimadmin123 \
+** bringfik: ** admin / cimadmin123 \
+** grafana: ** admin / admin by default. In the first login, you are sent to the password change screen if you want to change it at the moment, if it cannot be changed later in user preferences. \
+** dashboard: ** Get token with the following command: \
+`kubectl -n kubernetes-dashboard describe secret $ (kubectl -n kubernetes-dashboard get secret | grep kubernetes-dashboard-token | awk '{print $ 1}')` \
+Also explained in the readme of the component and for more information in the path: Components_core / kubernetes / dashboard.
 
-Para importar los dashboards de grafana. Hay 2 ejemplos dentro de la ruta: Componentes_core/kubernetes/grafana/dashboards. Simplemente seleccionando la opcion: **Upload JSON file** dentro de la seccion import dashboard y navegar hasta la ruta anteriormente mencionada.
+To import the grafana dashboards. There are 2 examples within the path: Components_core / kubernetes / grafana / dashboards. Simply selecting the option: ** Upload JSON file ** within the import dashboard section and navigate to the aforementioned path.
 
 
-Realizar la prueba abriendo el navegador entrado por conexion segura https a cualquiera de los sitios y por el puerto seguro del NodePort de acceso al controlador del balanceador de carga que en este caso es el **30443**.\
-Ejemplo: https://dashboard.cima.es:30443
+Carry out the test by opening the browser entered through a secure connection https to any of the sites and through the secure port of the NodePort to access the load balancer controller, which in this case is ** 30443 **. \
+Example: https://dashboard.cima.es:30443
 
-Si se realiza la prueba desde otra maquina, es necesario agregar las mimas rutas en el archivo hosts de la maquina en donde se este probando y cambiar la ip por la direccion de destino donde se haya desplegado el cluster. Es necesario que se encuentren dentro de la misma red las maquinas. O bien abrir el puerto de conexion segura del NodePort del balanceador a traves de una regla para ip publica; en caso de que la maquina de pruebas se encuentre dentro de una red diferente
+If the test is carried out from another machine, it is necessary to add the same routes in the hosts file of the machine where it is being tested and change the IP to the destination address where the cluster has been deployed. It is necessary that the machines are within the same network. Or open the secure connection port of the NodePort of the balancer through a rule for public ip; in case the test machine is within a different network
 
-**Importante:** Para Mac OS y Windows, en el caso de Docker For Desktop es necesario ingresar los directorios compartidos para el caso de los volumenes persistentes, tambien se puede utilizar [Docker Toolbox](https://docs.docker.com/docker-for-mac/docker-toolbox/) o [minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/). Cabe mencionar que este tipo de soluciones son para fines de desarrollo y no se supone que sean utilizadas para entornos productivos. Por tanto no se recomienda seguir esta guia si se desea instalar en un OS **Windows** O **MacOS** como plataforma base ya que las configuraciones de estos componentes se pretenden para entornos productivos. En su caso recomiendo instalar una maquina virtual con una instalacion Linux como OS (de preferencia distribuciones basadas en RPM). Y dentro de la misma instalar un minikube o un plano de control sencillo con kubeadm. Tambien incluye un apartado de despliegues para OpenShift si es que se cuenta con un servicio en la nube. Para el caso de Openshift en entorno de desarrollo mirar [minishift](https://www.okd.io/minishift/). Lo cual puede ser otra alternativa para usuarios de windows y mac. Dentro de cada componente core hay una carpeta **oc**
+** Important: ** For Mac OS and Windows, in the case of Docker For Desktop it is necessary to enter the shared directories for persistent volumes, you can also use [Docker Toolbox] (https: //docs.docker. com / docker-for-mac / docker-toolbox /) or [minikube] (https://kubernetes.io/docs/tasks/tools/install-minikube/). It is worth mentioning that these types of solutions are for development purposes and are not supposed to be used for production environments. Therefore, it is not recommended to follow this guide if you want to install on an OS ** Windows ** OR ** MacOS ** as a base platform since the configurations of these components are intended for productive environments. In your case, I recommend installing a virtual machine with a Linux installation such as OS (preferably RPM-based distributions). And inside it, install a minikube or a simple control plane with kubeadm. It also includes a section on deployments for OpenShift if you have a cloud service. For the case of Openshift in development environment see [minishift] (https://www.okd.io/minishift/). Which can be another alternative for Windows and Mac users. Inside each core component there is a folder ** oc **
 
-**Notas:** 
-* Quedan tambien pendientes de agregar microservicio de discovery y/o centralizador de api y ejemplo de cloud config para entornos.
-* **Pendiente de agregar alertmanager de prometeo.
-* ***Se agrega Jaeger de desarrollo como version inicial. En siguientes versiones se ira sustituyendo por el componente productivo.
-* *****Se ha detectado que a partir de la version 1.19.* de kubelet, han dejado de mostrarse las metricas de maquina en el cadvisor como se menciona en este [issue](https://github.com/kubernetes/kubernetes/issues/95204) y en este [PR](https://github.com/kubernetes/kubernetes/pull/95210). Los cuales aun no han sido resueltos. Por lo que el tablero de grafana que se encuentra en este repositorio, no mostrara las graficas de uso de CPU y RAM en el cluster. Por tanto; bien se puede quedar, de momento, con la ultima version 1.18 de kubelet (1.18.9); o bien, desplegar el componenente [kube-state-metrics](https://github.com/kubernetes/kube-state-metrics). No explicado ni incluido en este repositorio.\
-**UPDATE:** Se ha resuelto el bug a partir de la version 1.20.2 y se vuelven a mostrar las metricas de maquina por lo que ya no es necesario el despliegue del componente adicional y se puede seguir actualizando a las ultimas versiones el agente de kubelet en c/u de los nodos
+**Notes:**
+* They are also pending to add discovery microservice and / or api centralizer and example of cloud config for environments.
+* ** Pending to add prometheus alertmanager.
+* *** Development Jaeger is added as initial release. In subsequent versions it will be replaced by the productive component.
+* ***** It has been detected that as of kubelet version 1.19. *, The machine metrics have stopped showing in the cache as mentioned in this [issue] (https://github.com/kubernetes / kubernetes / issues / 95204) and in this [PR] (https://github.com/kubernetes/kubernetes/pull/95210). Which have not yet been resolved. So the graphical dashboard found in this repository will not show the graphs of CPU and RAM usage in the cluster. Therefore; It may well be, for the moment, with the latest version 1.18 of kubelet (1.18.9); Or, display the [kube-state-metrics] component (https://github.com/kubernetes/kube-state-metrics). Not explained or included in this repository. \
+** UPDATE: ** The bug has been solved as of version 1.20.2 and the machine metrics are shown again, so it is no longer necessary to deploy the additional component and you can continue updating to the latest versions on kubelet agent in each of the nodes
 
-**Changelog** 
-* 1.0 Version inicial
-
+** Changelog **
+* 1.0 Initial version
 
