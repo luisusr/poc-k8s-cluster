@@ -1,5 +1,5 @@
 # poc-k8s-cluster
-version 2 old repository cluster-template
+version 2 prior repository cluster-template
 
 Base project that has deployments of components necessary to control a complete solution based on architectures oriented to microservices and in distributed environments. Which is deployed on a cluster of kubernetes as a Docker runtime and orchestrator platform for the execution of containers in the nodes. Which contains the following components:
 
