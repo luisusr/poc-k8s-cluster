@@ -15,7 +15,7 @@ Requirements:
 * Jdk 8
 * Kubernetes (kubeadm, kubelet 1.18 **** and kubectl. Installation with kubeadm on linux is recommended. For Win and Mac OS it is necessary to install [Docker Desktop](https://www.docker.com/products/docker-desktop ))
 * Container runtime (Docker)
-* [Run local registry](https://docs.docker.com/registry/deploying/). **UPDATE** This step is no longer necessary as the registry is deployed within the cluster.
+* [Run local registry](https://docs.docker.com/registry/deploying/). **DEPRECATED** This step is no longer necessary as the registry is deployed within the cluster.
 
 In the case of linux, the installation is used from the kubernetes repository and starting a minimum control plane with the [kubeadm tool](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/), for Mac OS and Windows you can use docker for desktop although for windows you have to execute the content of the scripts since they are bash (.sh)
 
