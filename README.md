@@ -43,6 +43,7 @@ Add the following entries to the **hosts** file: \
 127.0.0.1 grafana.cima.es \
 127.0.0.1 jaeger.cima.es \
 127.0.0.1 dashboard.cima.es \
+127.0.0.1 registry.cima.es \
 127.0.0.1 jcr.cima.es
 
 USERS \
@@ -52,13 +53,14 @@ USERS \
 **dashboard:** Get token with the following command: \
 `kubectl -n kubernetes-dashboard describe secret $ (kubectl -n kubernetes-dashboard get secret | grep kubernetes-dashboard-token | awk '{print $ 1}')` \
 Also explained in the readme of the component and for more information in the path: Components_core / kubernetes / dashboard.\
-**jcr:** admin / password by default. In de  
+**jcr:** admin / password by default. In the first login screen you are propmted to set a new admin password as well as other user and repository settings and EULA acceptance. However an admin user **cima** with password Cimadmin123 must be set, if you want to test te deploy and push to jcr the image, since the imagePullSecret in the deployment has been set to match these credentials. As well as docker login with same ones before to execute the deployment with **jcr** registry (previously mentioned in deploy microservice instructions).
 
 To import the grafana dashboards. There are 2 examples within the path: Components_core / kubernetes / grafana / dashboards. Simply selecting the option: **Upload JSON file** within the import dashboard section and navigate to the aforementioned path.
 
 
 Perform the test by opening the browser entered through a secure connection https to any of the sites and through the secure port of the NodePort to access the load balancer controller, which in this case is **30443**. \
-Example: https://dashboard.cima.es:30443
+Example: https://dashboard.cima.es:30443. It must be the same with the Ingress access to the another hosts as soon as the other components start running and become available, by checking the status by the command: `kubectl get po -A`\
+like: https://traefik.cima.es:30443, https://registry.cima.es:30443, ... and so on.
 
 If the test is done from another machine, it is necessary to add the same routes in the hosts file of the machine where it is being tested and change the IP to the destination address where the cluster has been deployed. It is necessary that the machines are within the same network. Or open the secure connection port of the NodePort of the balancer through a rule for public ip; in case the test machine is within a different network
 
