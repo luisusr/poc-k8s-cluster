@@ -35,14 +35,15 @@ Once the cluster is installed and the components have been deployed, it is neces
 **NOTE:** It is likely that in the most recent versions of **Mac OS** "Catalina" and "Big Sur" will continue to show as an insecure site and in the case of Chrome the following error: ERR_CERT_VALIDITY_TOO_LONG; Despite having added the certificate, this due to the [policies](https://support.apple.com/en-us/HT210176) that has established Mac OS for trusted certificates and in this repository, the certificate of proof that I have generated and self-signed, I have established an expiration for 10 years, which does not fall within the requirements. In the case of **Windows 10**, it has been tested with the latest update in Chrome and Edge browsers and accepts the certificate without any error.
 
 Add the following entries to the **hosts** file: \
-127.0.0.1 bringfik.cima.es \
+127.0.0.1 traefik.cima.es \
 127.0.0.1 kibana.cima.es \
-127.0.0.1 top-mspocws-dev.cima.es \
-127.0.0.1 top-mspocws-test.top.es \
+127.0.0.1 cima-mspocws-dev.cima.es \
+127.0.0.1 cima-mspocws-test.cima.es \
 127.0.0.1 prometheus.cima.es \
 127.0.0.1 grafana.cima.es \
 127.0.0.1 jaeger.cima.es \
-127.0.0.1 dashboard.cima.es
+127.0.0.1 dashboard.cima.es \
+127.0.0.1 jcr.cima.es
 
 USERS \
 **kibana:** elastic / cimadmin123 \
