@@ -53,7 +53,7 @@ USERS \
 **dashboard:** Get token with the following command: \
 `kubectl -n kubernetes-dashboard describe secret $ (kubectl -n kubernetes-dashboard get secret | grep kubernetes-dashboard-token | awk '{print $ 1}')` \
 Also explained in the readme of the component and for more information in the path: Components_core / kubernetes / dashboard.\
-**jcr:** admin / password by default. In the first login screen you are propmted to set a new admin password as well as other user and repository settings and EULA acceptance. However an admin user **cima** with password Cimadmin123 must be set, if you want to test te deploy and push to jcr the image, since the imagePullSecret in the deployment has been set to match these credentials. As well as docker login with same ones before to execute the deployment with **jcr** registry (previously mentioned in deploy microservice instructions).
+**jcr:** admin / password by default. In the first login screen you are propmted to set a new admin password as well as other user and repository settings and EULA acceptance. However, an admin user **cima** with password Cimadmin123 must be set, if you want to test te deploy and push to jcr the image, since the imagePullSecret in the deployment has been set to match these credentials. As well as docker login with same ones before to execute the deployment with **jcr** registry (previously mentioned in deploy microservice instructions).
 
 To import the grafana dashboards. There are 2 examples within the path: Components_core / kubernetes / grafana / dashboards. Simply selecting the option: **Upload JSON file** within the import dashboard section and navigate to the aforementioned path.
 
