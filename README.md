@@ -48,10 +48,11 @@ Add the following entries to the **hosts** file: \
 USERS \
 **kibana:** elastic / cimadmin123 \
 **traefik:** admin / cimadmin123 \
-**grafana:** admin / admin by default. In the first login, you are sent to the password change screen if you want to change it at the moment, if it cannot be changed later in user preferences. \
+**grafana:** admin / admin by default. In the first login, you are prompted to change the password in the login screen if not so, you can change later in user preferences. \
 **dashboard:** Get token with the following command: \
 `kubectl -n kubernetes-dashboard describe secret $ (kubectl -n kubernetes-dashboard get secret | grep kubernetes-dashboard-token | awk '{print $ 1}')` \
-Also explained in the readme of the component and for more information in the path: Components_core / kubernetes / dashboard.
+Also explained in the readme of the component and for more information in the path: Components_core / kubernetes / dashboard.\
+**jcr:** admin / password by default. In de  
 
 To import the grafana dashboards. There are 2 examples within the path: Components_core / kubernetes / grafana / dashboards. Simply selecting the option: **Upload JSON file** within the import dashboard section and navigate to the aforementioned path.
 
