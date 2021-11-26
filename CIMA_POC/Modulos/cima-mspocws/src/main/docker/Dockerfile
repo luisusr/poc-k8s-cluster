@@ -7,7 +7,7 @@ RUN sed -i '/override_install_langs/d' /etc/yum.conf \
  && rm -rf /var/cache/yum \
  && mkdir /opt/java
  
-ADD sdk/java/jdk-8.tar.gz /opt/java
+COPY sdk/java/ /opt/java
 
 RUN chown -R root:root /opt/java/ && ln -s /opt/java/jdk-8/bin/* /usr/bin/
 
