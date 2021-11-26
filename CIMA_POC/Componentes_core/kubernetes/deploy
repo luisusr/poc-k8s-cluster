@@ -9,12 +9,13 @@ kubectl apply -f volumes/
 kubectl apply -f nfs/
 kubectl apply -f provisioner/
 kubectl apply -f registry/
-kubectl apply -f jcr/
+#kubectl apply -f jcr/
+kubectl apply -f rmq/
 kubectl apply -f traefik/
 kubectl apply -f elasticsearch/
 kubectl apply -f kibana/
 kubectl apply -f fluentd/
 kubectl apply -f prometheus/
 kubectl apply -f grafana/
-kubectl apply -f jaeger/
+#kubectl apply -f jaeger/
 kubectl apply -f dashboard/

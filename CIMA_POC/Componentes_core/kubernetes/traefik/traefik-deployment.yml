@@ -28,11 +28,13 @@ spec:
       containers:
       - image: traefik
         name: traefik-ingress-controller
+        imagePullPolicy: Always
         volumeMounts:
         - mountPath: /ssl
           name: traefik-tls-cert
-        - mountPath: /traefik
+        - mountPath: /traefik/traefik.toml
           name: traefik-dynamic-configmap
+          subPath: traefik.toml
         args:
         - --global.checknewversion=false
         - --global.sendanonymoususage=false

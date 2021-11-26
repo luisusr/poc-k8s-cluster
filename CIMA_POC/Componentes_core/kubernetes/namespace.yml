@@ -46,4 +46,9 @@ metadata:
 kind: Namespace
 apiVersion: v1
 metadata:
+  name: cima-rmq
+---
+kind: Namespace
+apiVersion: v1
+metadata:
   name: kubernetes-dashboard

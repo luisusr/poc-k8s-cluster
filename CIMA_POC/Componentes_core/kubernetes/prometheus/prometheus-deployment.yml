@@ -19,6 +19,7 @@ spec:
       containers:
         - name: prometheus
           image: prom/prometheus
+          imagePullPolicy: Always
           args:
             - "--config.file=/etc/prometheus/prometheus.yml"
             - "--storage.tsdb.retention.time=12h"
@@ -26,7 +27,8 @@ spec:
             - containerPort: 9090
           volumeMounts:
             - name: prometheus-config-volume
-              mountPath: /etc/prometheus
+              mountPath: /etc/prometheus/prometheus.yml
+              subPath: prometheus.yml
             - name: prometheus-storage-volume
               mountPath: /prometheus
       volumes:

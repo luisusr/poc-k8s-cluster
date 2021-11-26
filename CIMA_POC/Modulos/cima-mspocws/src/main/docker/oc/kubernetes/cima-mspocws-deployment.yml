@@ -41,7 +41,7 @@ spec:
               fieldPath: status.hostIP
         resources:
           requests:
-            memory: "512Mi"
+            memory: "256Mi"
             cpu: "100m"
           limits:
             memory: "1024Mi"
@@ -54,9 +54,10 @@ spec:
             path: /management/health
             port: http
           initialDelaySeconds: 10 
-          periodSeconds: 5
+          periodSeconds: 10
         livenessProbe:
           httpGet:
             path: /management/health
             port: http
-          initialDelaySeconds: 240
+          initialDelaySeconds: 200
+          periodSeconds: 20

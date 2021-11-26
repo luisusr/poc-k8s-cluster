@@ -1,0 +1,34 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-cluster
+  namespace: cima-rmq
+  labels:
+    app: cima-rmq
+spec:
+  clusterIP: None
+  ports:
+  - port: 25672
+    name: cluster-rpc
+  selector:
+    app: cima-rmq
+  type: ClusterIP
+  sessionAffinity: None
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cima-rmq
+  namespace: cima-rmq
+  labels:
+    app: cima-rmq
+spec:
+  ports:
+  - name: amqp
+    port: 5672
+  - name: http
+    port: 15672
+  - name: metrics
+    port: 15692  
+  selector:
+    app: cima-rmq

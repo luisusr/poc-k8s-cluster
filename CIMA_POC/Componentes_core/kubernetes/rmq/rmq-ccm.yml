@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rabbit-cookie
+  namespace: cima-rmq
+data:
+  .erlang.cookie: |
+    CIQRDUQYDMZISKSZNXUF

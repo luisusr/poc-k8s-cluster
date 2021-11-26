@@ -42,7 +42,8 @@ spec:
         - name: varlog
           mountPath: /var/log
         - name: config-volume
-          mountPath: /fluentd/etc
+          mountPath: /fluentd/etc/fluent.conf
+          subPath: fluent.conf
         securityContext:
           privileged: true
       terminationGracePeriodSeconds: 30

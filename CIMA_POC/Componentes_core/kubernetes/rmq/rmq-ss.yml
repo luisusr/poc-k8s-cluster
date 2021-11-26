@@ -1,0 +1,157 @@
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: cima-rmq
+  namespace: cima-rmq
+  labels:
+    app: cima-rmq
+spec:
+  serviceName: rabbitmq-cluster
+  replicas: 3
+  selector:
+    matchLabels:
+      app: cima-rmq
+  template:
+    metadata:
+      labels:
+        app: cima-rmq
+      annotations:
+        prometheus.io.scrape: "true"
+        prometheus.io.port: "15692"
+    spec:
+      serviceAccountName: rabbitmq
+      initContainers:
+      - name: rabbitmq-config
+        image: busybox
+        command:
+        - sh
+        - -c
+        - cp /tmp/rabbitmq/rabbitmq.conf /etc/rabbitmq/rabbitmq.conf && echo '' >> /etc/rabbitmq/rabbitmq.conf;
+          cp /tmp/rabbitmq/enabled_plugins /etc/rabbitmq/enabled_plugins
+        volumeMounts:
+        - name: rmq-config
+          mountPath: /tmp/rabbitmq
+        - name: rmq-config-rw
+          mountPath: /etc/rabbitmq
+      - name: rabbitmq-cookie-config
+        image: busybox
+        command:
+        - sh
+        - -c
+        - cp /tmp/rabbitmq-rw/.erlang.cookie /var/lib/rabbitmq/.erlang.cookie && chmod 400 /var/lib/rabbitmq/.erlang.cookie
+        volumeMounts:
+        - name: rmq-default-cookie
+          mountPath: /tmp/rabbitmq-rw
+        - name: rmq-cookie-rw
+          mountPath: /var/lib/rabbitmq
+      containers:
+        - name: cima-rmq
+          image: rabbitmq
+          imagePullPolicy: Always
+          env:
+          - name: RABBITMQ_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          - name: RABBITMQ_POD_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.name
+          - name: RABBITMQ_USE_LONGNAME
+            value: "true"
+          - name: K8S_SERVICE_NAME
+            value: "rabbitmq-cluster"
+          - name: RABBITMQ_NODENAME
+            value: "rabbit@$(RABBITMQ_POD_NAME).$(K8S_SERVICE_NAME).$(RABBITMQ_NAMESPACE).svc.cluster.local"
+          - name: RABBITMQ_DEFAULT_USER
+            valueFrom:
+              secretKeyRef:
+                name: rmq-secret
+                key: rabbitmq-user
+          - name: RABBITMQ_DEFAULT_PASS
+            valueFrom:
+              secretKeyRef:
+                name: rmq-secret
+                key: rabbitmq-pass
+          ports:
+          - name: amqp
+            containerPort: 5672
+          - name: http
+            containerPort: 15672
+          - name: metrics
+            containerPort: 15692
+          - name: cluster-rpc
+            containerPort: 25672
+          resources:
+            requests: 
+              cpu: 100m
+          volumeMounts:
+            - name: rmq-config-rw
+              mountPath: /etc/rabbitmq
+            - name: rmq-storage
+              mountPath: /var/lib/rabbitmq
+            - name: rmq-cookie-rw
+              mountPath: /var/lib/rabbitmq/.erlang.cookie
+              subPath: .erlang.cookie
+          readinessProbe:
+            httpGet:
+              path: /api/health/checks/virtual-hosts
+              port: http
+              httpHeaders:
+              # Credenciales cima. No eliminar usuario
+                - name: Authorization
+                  value: Basic Y2ltYTpDaW1hZG1pbjEyMw==
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          livenessProbe:
+            httpGet:
+              path: /api/health/checks/virtual-hosts
+              port: http
+              httpHeaders:
+              # Credenciales cima. No eliminar usuario
+                - name: Authorization
+                  value: Basic Y2ltYTpDaW1hZG1pbjEyMw==
+            initialDelaySeconds: 120
+            periodSeconds: 60
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - rabbitmqctl force_boot
+      securityContext:
+        fsGroup: 999
+        runAsUser: 999
+        runAsGroup: 999
+      volumes:
+        - name: rmq-config
+          configMap:
+            name: rabbitmq-config
+            items:
+            - key: enabled_plugins
+              path: "enabled_plugins"
+            - key: rabbitmq.conf
+              path: "rabbitmq.conf"
+        - name: rmq-default-cookie
+          configMap:
+            defaultMode: 420
+            name: rabbit-cookie
+        - name: rmq-config-rw
+          emptyDir: {}
+        - name: rmq-cookie-rw
+          emptyDir: {}        
+  volumeClaimTemplates:
+  - metadata:
+      name: rmq-storage
+      labels:
+        app: cima-rmq
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      storageClassName: managed-nfs-storage
+      resources:
+        requests:
+          storage: 5Gi
