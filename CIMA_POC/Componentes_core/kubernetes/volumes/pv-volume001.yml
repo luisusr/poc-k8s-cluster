@@ -24,4 +24,4 @@ spec:
           values:
           # cambiar por el/los planos de control
           # donde se despliege el servidor nfs
-          - f30-master
+          - f34-master

@@ -16,17 +16,23 @@ spec:
         app: kibana
     spec:
       volumes:
+      - name: kibana-keystore
+        secret:
+          secretName: kibana-keystore
       - name: kibana-config
         configMap:
           name: kibana-config
       containers:
       - name: kibana
-        image: docker.elastic.co/kibana/kibana:7.15.2
+        image: docker.elastic.co/kibana/kibana:8.0.0
         volumeMounts:
         - mountPath: usr/share/kibana/config/kibana.yml
           name: kibana-config
           readOnly: true
           subPath: kibana.yml
+        - name: kibana-keystore
+          mountPath: /usr/share/kibana/config/kibana.keystore
+          subPath: kibana.keystore
         resources:
           limits:
             cpu: 1000m

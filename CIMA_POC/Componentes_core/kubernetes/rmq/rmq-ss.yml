@@ -119,9 +119,15 @@ spec:
             postStart:
               exec:
                 command:
-                  - /bin/sh
+                  - sh
                   - -c
-                  - rabbitmqctl force_boot
+                  - >
+                    if [ -d "${RABBITMQ_DATA_DIR}/mnesia/${RABBITMQ_NODENAME}" ]; then
+                      echo "Forcing node to start..." >> /proc/1/fd/1;
+                      rabbitmqctl force_boot;
+                    else 
+                      echo "New node..." >> /proc/1/fd/1;
+                    fi
       securityContext:
         fsGroup: 999
         runAsUser: 999

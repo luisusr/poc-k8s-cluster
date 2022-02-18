@@ -23,7 +23,7 @@ spec:
           name: elastic-config
       containers:
       - name: elasticsearch
-        image: docker.elastic.co/elasticsearch/elasticsearch:7.15.2
+        image: docker.elastic.co/elasticsearch/elasticsearch:8.0.0
         resources:
             limits:
               cpu: 1000m
@@ -44,7 +44,8 @@ spec:
           readOnly: true
           subPath: elasticsearch.yml
         - name: elastic-cert
-          mountPath: /usr/share/elasticsearch/config/certs
+          mountPath: /usr/share/elasticsearch/config/certs/elastic-certificates.p12
+          subPath: elastic-certificates.p12
         env:
           - name: CLUSTER_NAME
             value: es-cluster
@@ -85,7 +86,7 @@ spec:
       # Verificar la anotacion y la etiqueta segun el ambiente/plataforma
       # donde se este desplegando y ajustarlo segun sea el caso.
       nodeSelector:
-        kubernetes.io/hostname: f30-master
+        kubernetes.io/hostname: f34-master
   volumeClaimTemplates:
   - metadata:
       name: data

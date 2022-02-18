@@ -7,9 +7,11 @@ metadata:
     addonmanager.kubernetes.io/mode: Reconcile
 data:
   fluent.conf: |-
-    <match fluent.**>
-      @type null
-    </match>
+    <label @FLUENT_LOG>
+      <match fluent.*>
+        @type null
+      </match>
+    </label>
 
     <source>
       @type tail

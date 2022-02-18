@@ -54,4 +54,4 @@ spec:
       # Verificar la anotacion y la etiqueta segun el ambiente/plataforma
       # donde se este desplegando y ajustarlo segun sea el caso.
       nodeSelector:
-        kubernetes.io/hostname: f30-master
+        kubernetes.io/hostname: f34-master

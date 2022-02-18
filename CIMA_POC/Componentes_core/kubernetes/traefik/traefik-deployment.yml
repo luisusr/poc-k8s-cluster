@@ -6,7 +6,6 @@ metadata:
   labels:
     app: traefik-ingress-controller
 spec:
-  replicas: 3
   selector:
     matchLabels:
       app: traefik-ingress-controller

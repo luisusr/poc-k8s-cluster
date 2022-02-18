@@ -1,0 +1,6 @@
+#!/bin/bash
+kubectl create secret generic elastic-cert --from-file elasticsearch/tls/elastic-certificates.p12 -n cima-logging
+kubectl create secret generic kibana-keystore --from-file kibana/keystore/kibana.keystore -n cima-logging
+kubectl apply -f elasticsearch/
+kubectl apply -f kibana/
+kubectl apply -f fluentd/

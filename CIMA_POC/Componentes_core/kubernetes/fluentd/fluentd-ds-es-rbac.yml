@@ -70,9 +70,19 @@ spec:
           # X-Pack Authentication
           # =====================
           - name: FLUENT_ELASTICSEARCH_USER
-            value: "elastic"
+            valueFrom:
+              secretKeyRef:
+                name: elasticsearch-secret
+                key: elasticsearch-user
           - name: FLUENT_ELASTICSEARCH_PASSWORD
-            value: "cimadmin123"
+            valueFrom:
+              secretKeyRef:
+                name: elasticsearch-secret
+                key: elasticsearch-pass
+          - name: K8S_NODE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName      
         resources:
           limits:
             memory: 512Mi

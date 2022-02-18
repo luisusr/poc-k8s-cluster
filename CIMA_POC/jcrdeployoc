@@ -22,12 +22,12 @@ docker rmi $(docker images -aq -f dangling=true)
 
 #verificamos que la aplicacion ya exista para que no la parche al primer despliegue
 EXISTS=false
-if kubectl get deployments -n=cima-dev | grep -q cima-mspocws-jcr-app; then
+if oc get deployments -n=cima-dev | grep -q cima-mspocws-jcr-app; then
 	 EXISTS=true
 fi
-kubectl apply -f Modulos/cima-mspocws/src/main/docker/oc/kubernetes/jcr/
+oc apply -f Modulos/cima-mspocws/src/main/docker/oc/kubernetes/jcr/
 
 #si existe la aplicacion la parcha y se actualiza
 if [ "$EXISTS" == true ]; then
-	 kubectl patch deployment cima-mspocws-jcr-app -p '{"spec":{"template":{"metadata":{"labels": { "buildate" : "'$(date '+%d-%m-%Y_%H.%M.%S.%3N')'", "version" : "latest"}}}}}' -n=cima-dev
+     oc patch deploy cima-mspocws-jcr-app -p '{"spec":{"template":{"metadata":{"labels":{"buildate":"'$(date '+%d-%m-%Y_%H.%M.%S.%3N')'","version":"latest"}}}}}' -n=cima-dev
 fi
