@@ -15,3 +15,9 @@ data:
     elasticsearch:
       hosts: [ "http://elasticsearch.cima-logging:9200" ]
     monitoring.ui.container.elasticsearch.enabled: true
+    xpack:
+      reporting:
+        kibanaServer:
+          hostname: localhost
+        roles:
+          enabled: false

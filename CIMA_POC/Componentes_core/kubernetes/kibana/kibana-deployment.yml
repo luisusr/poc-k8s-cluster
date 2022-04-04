@@ -24,7 +24,7 @@ spec:
           name: kibana-config
       containers:
       - name: kibana
-        image: docker.elastic.co/kibana/kibana:8.0.0
+        image: docker.elastic.co/kibana/kibana:8.1.2
         volumeMounts:
         - mountPath: usr/share/kibana/config/kibana.yml
           name: kibana-config
@@ -33,6 +33,28 @@ spec:
         - name: kibana-keystore
           mountPath: /usr/share/kibana/config/kibana.keystore
           subPath: kibana.keystore
+        env:
+          - name: KIBANA_SYSTEM_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: elasticsearch-secret
+                key: elasticsearch-pass
+        lifecycle:
+            postStart:
+              exec:
+                command:
+                  - sh
+                  - -c
+                  - >
+                    echo "Setting kibana_system password" >> /proc/1/fd/1;
+                    until curl -s -X POST -H "Authorization: Basic ZWxhc3RpYzpjaW1hZG1pbjEyMw=="
+                    -H "Content-Type: application/json"
+                    elasticsearch.cima-logging:9200/_security/user/kibana_system/_password
+                    -d "{\"password\":\"${KIBANA_SYSTEM_PASSWORD}\"}" | grep -q "^{}"; do
+                      echo "Waiting for Elasticsearch availability..." >> /proc/1/fd/1;
+                      sleep 10;
+                    done;
+                    echo "All done!" >> /proc/1/fd/1;
         resources:
           limits:
             cpu: 1000m
