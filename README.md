@@ -52,7 +52,7 @@ USERS \
 **traefik:** admin / cimadmin123 \
 **grafana:** admin / admin by default. In the first login, you are prompted to change the password in the login screen if not so, you can change later in user preferences. \
 **dashboard:** Get token with the following command: \
-`kubectl -n kubernetes-dashboard describe secret $ (kubectl -n kubernetes-dashboard get secret | grep kubernetes-dashboard-token | awk '{print $ 1}')` \
+`kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep kubernetes-dashboard-token | awk '{print $ 1}')` \
 Also explained in the readme of the component and for more information in the path: Components_core / kubernetes / dashboard.\
 **jcr:** admin / password by default. In the first login screen you are propmted to set a new admin password as well as other user and repository settings and EULA acceptance. However, an admin user **cima** with password Cimadmin123 must be set, if you want to test the deploy with jcr registry image, since the
 imagePullSecret in the deployment has been set to match these credentials. As well as docker login with the same ones before to execute the deployment with **jcr** registry (previously mentioned in deploy microservice instructions). Moreover prior to that, is necessary to set the traefik crt file located in same directory as **ca.pem** public browser certificate used to import (Components_core/kubernetes/traefik/tls directory), you must set the **tls.crt** file in the
