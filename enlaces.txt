@@ -1,0 +1,8 @@
+https://stackoverflow.com/questions/35757620/how-to-gracefully-remove-a-node-from-kubernetes
+https://www.digitalocean.com/community/cheatsheets/getting-started-with-kubernetes-a-kubectl-cheat-sheet
+https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands#config
+
+
+MAÑANA
+
+PROBAR CGROUP DRIVER Y REINICIAR SERVICIO Y VER SI HAY CONTENEDORES LUEGO REINICIAR LIMPIAR NODO Y VER SI ES QUE LOS QUITA
