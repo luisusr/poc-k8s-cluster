@@ -9,12 +9,12 @@ mvn -f Modulos/cima-mspocws/pom.xml clean package
 CHECK_PROXY="$(docker info | grep -i 'http proxy')"
 if [ "$CHECK_PROXY" ]; then
 	DOCKER_PROXY=$(echo $CHECK_PROXY | awk -F': ' '{print $NF}')
-	docker build --build-arg http_proxy=$DOCKER_PROXY -f Modulos/cima-mspocws/src/main/docker/Dockerfile -t registry.cima.es:30443/cima-mspocws .
+	docker build --build-arg http_proxy=$DOCKER_PROXY -f Modulos/cima-mspocws/src/main/docker/Dockerfile -t registry.cima.es/cima-mspocws .
 else 
-	docker build -f Modulos/cima-mspocws/src/main/docker/Dockerfile -t registry.cima.es:30443/cima-mspocws .
+	docker build -f Modulos/cima-mspocws/src/main/docker/Dockerfile -t registry.cima.es/cima-mspocws .
 fi
 
-docker push registry.cima.es:30443/cima-mspocws
+docker push registry.cima.es/cima-mspocws
 
 
 

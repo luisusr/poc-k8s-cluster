@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: cima-mspocws-app
-        image: registry.cima.es:30443/cima-mspocws
+        image: registry.cima.es/cima-mspocws
         imagePullPolicy: Always
         env:
         - name: SPRING_MAIN_BANNER-MODE

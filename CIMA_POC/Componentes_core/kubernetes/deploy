@@ -10,7 +10,7 @@ kubectl apply -f provisioner/
 kubectl apply -f registry/
 #kubectl apply -f jcr/
 #kubectl apply -f rmq/
-kubectl apply -f traefik/
+kubectl apply -f traefik/ds/
 ./efk
 kubectl apply -f prometheus/
 kubectl apply -f grafana/

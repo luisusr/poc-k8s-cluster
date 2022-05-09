@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: cima-networking
+  name: traefik-dynamic-configmap
+data:
+  traefik.toml: |
+    # Dynamic configuration
+    [http]
+      [http.routers]
+        [http.routers.admin-auth]
+          rule = "Host(`traefik.cima.es`)"
+          service = "api@internal"
+          middlewares = ["auth"]
+          [http.routers.admin-auth.tls]
+      
+      [http.middlewares]
+        [http.middlewares.auth.basicAuth]
+          users = ["admin:$apr1$mSubp6QI$rYbuye2KlcYRkfbhXsFjr."]
+          removeHeader = true
+    [tls]
+     [[tls.certificates]]
+       certFile = "/ssl/tls.crt"
+       keyFile = "/ssl/tls.key"

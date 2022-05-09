@@ -24,7 +24,7 @@ spec:
           name: kibana-config
       containers:
       - name: kibana
-        image: docker.elastic.co/kibana/kibana:8.1.2
+        image: docker.elastic.co/kibana/kibana:8.2.0
         volumeMounts:
         - mountPath: usr/share/kibana/config/kibana.yml
           name: kibana-config

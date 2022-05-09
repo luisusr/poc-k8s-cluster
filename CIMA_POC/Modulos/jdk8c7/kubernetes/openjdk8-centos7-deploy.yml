@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: openjdk8-centos7
-        image: registry.cima.es:30443/openjdk8-centos7
+        image: registry.cima.es/openjdk8-centos7
         stdin: true
         tty: true
         imagePullPolicy: "Always"
