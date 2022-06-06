@@ -58,8 +58,11 @@ spec:
               - ALL
               add:
               - NET_BIND_SERVICE
-          runAsUser: 65532
-          runAsGroup: 65532
+          # tiene que ejecutar como root
+          # si se enlazan los puertos 80 y 443
+          # respectivamente
+          # runAsUser: 65532
+          # runAsGroup: 65532
 ---
 kind: Service
 apiVersion: v1
