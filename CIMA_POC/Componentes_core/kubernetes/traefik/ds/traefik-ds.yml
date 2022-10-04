@@ -67,7 +67,7 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: traefik-dashboard-service
+  name: traefik-service
   namespace: cima-networking
 spec:
   selector:
