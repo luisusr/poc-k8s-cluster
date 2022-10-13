@@ -39,3 +39,11 @@ opentracing:
   spring:
     web:
       skip-pattern: /api-docs.*|/swagger.*|.*\.png|.*\.css|.*\.js|.*\.html|/favicon.ico|/hystrix.stream|/metrics.*|/management.*|/soap-api
+
+cima:
+  web:
+    cors:
+      allowed-origins:
+      - http://localhost:3000
+      max-age: 3600
+      allowed-methods: "*"
