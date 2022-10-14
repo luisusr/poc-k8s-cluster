@@ -5,20 +5,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.core.env.Environment;
 
 import es.tirea.cima.comun.config.BaseConfigurer;
-import es.tirea.cima.comun.config.CimaConfigProperties;
 import es.tirea.cima.comun.config.DefaultProfileUtil;
 
 /**
  * @author luisusr
  *
  */
-@SpringBootApplication
-@EnableConfigurationProperties({ CimaConfigProperties.class })
+@SpringBootApplication (scanBasePackages = { "es.tirea.cima" })
 public class Application extends SpringBootServletInitializer{
 	
 	private static final Logger log = LoggerFactory.getLogger(Application.class);

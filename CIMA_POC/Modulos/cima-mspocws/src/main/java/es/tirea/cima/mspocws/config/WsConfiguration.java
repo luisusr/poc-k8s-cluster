@@ -16,7 +16,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-import es.tirea.cima.comun.config.CimaConfigProperties;
+import es.tirea.cima.comun.config.CorsProperties;
 import es.tirea.cima.mspocws.Application;
 import es.tirea.cima.mspocws.cxf.ItemService;
 import es.tirea.cima.mspocws.cxf.ItemServiceImpl;
@@ -27,7 +27,7 @@ public class WsConfiguration {
 	private static final Logger log = LoggerFactory.getLogger(Application.class);
 	
 	@Autowired
-	private CimaConfigProperties serverConfig;
+	private CorsProperties corsProperties;
 
 
 	@Bean
@@ -55,7 +55,7 @@ public class WsConfiguration {
 	@Bean
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = serverConfig.getCors();
+        CorsConfiguration config = corsProperties.getCors();
         if (config.getAllowedOrigins() != null && !config.getAllowedOrigins().isEmpty()) {
             log.info("Registering CORS filter");            
             source.registerCorsConfiguration("/**", config);

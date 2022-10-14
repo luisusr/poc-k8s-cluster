@@ -1,11 +1,12 @@
 package es.tirea.cima.comun.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 import org.springframework.web.cors.CorsConfiguration;
 
-
-@ConfigurationProperties(prefix = "cima.web")
-public class CimaConfigProperties {
+@Component
+@ConfigurationProperties(prefix = "cors.config")
+public class CorsProperties {
 
 	private CorsConfiguration cors = new CorsConfiguration();
 	
