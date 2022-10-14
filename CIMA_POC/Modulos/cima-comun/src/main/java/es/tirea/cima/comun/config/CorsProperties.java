@@ -18,8 +18,4 @@ public class CorsProperties {
 		this.cors = cors;
 	}
 	
-	
-	
-
-	
 }
