@@ -1,0 +1,11 @@
+#!/bin/bash
+#==============FASE DE CONSTRUCCION IMAGEN Y ENVIO A REGISTRY=============
+mvn -f Modulos/cima-comun/pom.xml clean install
+mvn -f Modulos/cima-mspocws/pom.xml clean package
+
+docker build --pull -f Modulos/cima-mspocws/src/main/docker/Dockerfile -t 374279165797.dkr.ecr.eu-west-1.amazonaws.com/srv/poc:01 -t 374279165797.dkr.ecr.eu-west-1.amazonaws.com/srv/poc:latest .
+
+docker push 374279165797.dkr.ecr.eu-west-1.amazonaws.com/srv/poc
+
+docker rmi $(docker images -aq -f dangling=true) 2>/dev/null
+
