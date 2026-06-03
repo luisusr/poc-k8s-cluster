@@ -1,11 +1,22 @@
 apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: traefik-lb
+spec:
+  controller: traefik.io/ingress-controller
+
+---
+
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: kubernetes-dashboard-ingress
   namespace: kubernetes-dashboard
-  annotations:
-      kubernetes.io/ingress.class: traefik
+  #DEPRECATED
+  #annotations:
+  #    kubernetes.io/ingress.class: traefik
 spec:
+  ingressClassName: traefik-lb
   tls:
   - hosts:
     - dashboard.cima.es
