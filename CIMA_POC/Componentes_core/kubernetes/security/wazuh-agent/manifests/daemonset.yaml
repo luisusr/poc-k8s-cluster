@@ -1,0 +1,451 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: wazuh-agent
+  namespace: security
+  labels:
+    app: wazuh-agent
+    app.kubernetes.io/name: wazuh-agent
+    app.kubernetes.io/component: security
+    app.kubernetes.io/version: "4.14.4"
+spec:
+  selector:
+    matchLabels:
+      app: wazuh-agent
+
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+
+  template:
+    metadata:
+      labels:
+        app: wazuh-agent
+        app.kubernetes.io/name: wazuh-agent
+        app.kubernetes.io/component: security
+        app.kubernetes.io/version: "4.14.4"
+
+    spec:
+      serviceAccountName: wazuh-agent
+      terminationGracePeriodSeconds: 20
+
+      # ── Version note ────────────────────────────────────────────────────────
+      # All components (manager, indexer, dashboard, agent) run 4.14.4.
+      # Agent and manager versions match — enrollment protocol compatible.
+      # ────────────────────────────────────────────────────────────────────────
+
+      # ── EKS/containerd note ─────────────────────────────────────────────────
+      # The official docs show the same DaemonSet pattern for generic Kubernetes.
+      # No docker-socket mounts or docker-specific volumes are used.
+      # The pattern is container-runtime-agnostic and works with containerd.
+      # ────────────────────────────────────────────────────────────────────────
+
+      # hostPID: gives the agent visibility into host process IDs.
+      # This is an addition to the official docs — required for rootcheck
+      # to enumerate host processes when running inside a container.
+      hostPID: true
+
+      # Start on system nodes only for safe initial rollout.
+      # To expand to all nodes: delete the nodeSelector block below.
+      # nodeSelector:
+      #  role: system
+
+      # Tolerate all taints on system nodes so the agent is not evicted.
+      tolerations:
+        - operator: Exists
+
+      # ── Init containers (official Wazuh Kubernetes pattern, 5 stages) ───────
+      #
+      # Stage 1 — Remove stale PID, lock, and agentd state files from a
+      #            previous run.
+      #            PID/lock files:  without this, the agent refuses to start
+      #            after an ungraceful pod shutdown.
+      #            wazuh-agentd.state: caches the last connected manager IP
+      #            (enrollment server). If the service type changed (e.g. LB →
+      #            ClusterIP) the cached IP is stale and wazuh-agentd tries it
+      #            first, delaying enrollment. Removing it forces the agent to
+      #            use the manager_address from ossec.conf on every pod start.
+      initContainers:
+        - name: cleanup-ossec-stale
+          image: busybox:1.36
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "-lc"]
+          args:
+            - |
+              set -e
+              echo "[init] Cleaning old locks and agentd state..."
+              mkdir -p /agent/var/run /agent/queue/ossec
+              rm -f /agent/var/run/*.pid          || true
+              rm -f /agent/queue/ossec/*.lock     || true
+              rm -f /agent/var/wazuh-agentd.state || true
+          volumeMounts:
+            - name: ossec-data
+              mountPath: /agent
+
+        # Stage 2 — Seed the full agent binary tree to the hostPath volume on
+        #            first startup or after a version upgrade.
+        #
+        #            A version marker (.wazuh-agent-version) is written after each
+        #            seed. On restart, if the marker is absent or has a different
+        #            version string, the hostPath is cleared and re-seeded from the
+        #            current image. This ensures that upgrading the DaemonSet image
+        #            tag forces a fresh binary tree rather than running old binaries
+        #            against a newer manager (which triggers "Invalid request" in
+        #            wazuh-authd).
+        #
+        #            client.keys (the enrollment key) is preserved across re-seeds
+        #            so the node does not create a duplicate agent entry in the
+        #            manager on upgrade.
+        - name: seed-ossec-tree
+          image: wazuh/wazuh-agent:4.14.4
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "-lc"]
+          args:
+            - |
+              set -e
+              EXPECTED_VERSION="wazuh-agent-4.14.6"
+              MARKER="/agent/.wazuh-agent-version"
+
+              CURRENT=$(cat "$MARKER" 2>/dev/null || echo "none")
+              if [ "$CURRENT" = "$EXPECTED_VERSION" ]; then
+                echo "[init] Version marker matches ($CURRENT). Skipping seed."
+              else
+                echo "[init] Version mismatch (installed: $CURRENT, expected: $EXPECTED_VERSION). Re-seeding..."
+                # Preserve enrollment key so the agent doesn't create a duplicate
+                # entry in the manager. If client.keys doesn't exist yet (first run),
+                # the copy silently fails and enrollment happens normally.
+                mkdir -p /tmp/preserve/etc
+                cp /agent/etc/client.keys /tmp/preserve/etc/ 2>/dev/null || true
+
+                # Clear the entire hostPath tree and seed from the current image.
+                rm -rf /agent/*
+                tar -C /var/ossec -cf - . | tar -C /agent -xpf -
+
+                # Restore the enrollment key if it was saved.
+                if [ -f /tmp/preserve/etc/client.keys ]; then
+                  cp /tmp/preserve/etc/client.keys /agent/etc/client.keys
+                  echo "[init] client.keys restored."
+                fi
+
+                echo "$EXPECTED_VERSION" > "$MARKER"
+                echo "[init] Seed complete."
+              fi
+          volumeMounts:
+            - name: ossec-data
+              mountPath: /agent
+
+        # Stage 3 — Fix ownership and permissions on the seeded data.
+        #            The ossec user inside the wazuh-agent image has UID 999.
+        #            Binaries must be owned by root (0:0) and executable.
+        - name: fix-permissions
+          image: busybox:1.36
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "-lc"]
+          args:
+            - |
+              set -e
+              echo "[init] Fixing permissions..."
+              for d in etc logs queue var rids tmp active-response; do
+                [ -d "/agent/$d" ] && chown -R 999:999 "/agent/$d" || true
+              done
+              chown -R 0:0 /agent/bin /agent/lib 2>/dev/null || true
+              find /agent/bin -type f -exec chmod 0755 {} \; 2>/dev/null || true
+              echo "[init] Permissions OK."
+          volumeMounts:
+            - name: ossec-data
+              mountPath: /agent
+
+        # Stage 4 — Generate ossec.conf from environment variables.
+        #            This is the official approach: config is generated at runtime
+        #            so the same image can target any manager without a rebuild.
+        #            Manager addresses use in-cluster service FQDNs instead of
+        #            the external LB IPs shown in the official docs.
+        - name: write-ossec-config
+          image: busybox:1.36
+          imagePullPolicy: IfNotPresent
+          env:
+            # Event forwarding > worker service (in-cluster FQDN)
+            # Official docs use <EXTERNAL_IP_WAZUH_WORKER> (external LB).
+            # For in-cluster agents we use the ClusterIP service DNS name.
+            - name: WAZUH_MANAGER
+              value: "wazuh-workers.security.svc.cluster.local"
+            - name: WAZUH_PORT
+              value: "1514"
+            - name: WAZUH_PROTOCOL
+              value: "tcp"
+            # Enrollment > master service (authd runs on master)
+            # Official docs use <EXTERNAL_IP_WAZUH> (external LB).
+            - name: WAZUH_REGISTRATION_SERVER
+              value: "wazuh.security.svc.cluster.local"
+            - name: WAZUH_REGISTRATION_PORT
+              value: "1515"
+            # Agent name = EKS node hostname (injected via Downward API)
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          command: ["/bin/sh", "-lc"]
+          args:
+            - |
+              set -e
+              echo "[init] Writing ossec.conf for node ${NODE_NAME}..."
+              mkdir -p /agent/etc
+              # Wazuh agent names only allow [a-zA-Z0-9_-] — dots are rejected
+              # by wazuh-authd with "Invalid request for new agent".
+              # EKS node FQDNs (e.g. ip-10-0-1-1.eu-central-1.compute.internal)
+              # contain dots, so we replace every dot with a dash.
+              NODE_SAFE_NAME=$(echo "${NODE_NAME}" | tr '.' '-')
+              cat > /agent/etc/ossec.conf <<EOF
+              <ossec_config>
+
+                <client>
+                  <server>
+                    <address>${WAZUH_MANAGER}</address>
+                    <port>${WAZUH_PORT}</port>
+                    <protocol>${WAZUH_PROTOCOL}</protocol>
+                  </server>
+                  <enrollment>
+                    <enabled>yes</enabled>
+                    <agent_name>${NODE_SAFE_NAME}</agent_name>
+                    <manager_address>${WAZUH_REGISTRATION_SERVER}</manager_address>
+                    <port>${WAZUH_REGISTRATION_PORT}</port>
+                    <!-- groups omitted: assigned via Wazuh Dashboard after enrollment -->
+                    <!-- In Wazuh 4.14.x, authd enforces password authentication when
+                         authd.pass is present on the server (even with use_password=no
+                         in master.conf). The agent reads the password from the file
+                         deployed by the fix-authd-pass-perms init container, which
+                         uses the same wazuh-authd-pass secret as the manager. -->
+                    <authorization_pass_path>/var/ossec/etc/authd.pass</authorization_pass_path>
+                    <delay_after_enrollment>20</delay_after_enrollment>
+                  </enrollment>
+                  <notify_time>10</notify_time>
+                  <time-reconnect>60</time-reconnect>
+                  <auto_restart>yes</auto_restart>
+                  <crypto_method>aes</crypto_method>
+                </client>
+
+                <client_buffer>
+                  <disabled>no</disabled>
+                  <queue_size>5000</queue_size>
+                  <events_per_second>500</events_per_second>
+                </client_buffer>
+
+                <syscheck>
+                  <disabled>no</disabled>
+                  <frequency>43200</frequency>
+                  <scan_on_start>yes</scan_on_start>
+                  <alert_new_files>yes</alert_new_files>
+                  <!-- Host filesystem mounted at /rootfs (hostPath /).
+                       Monitoring host paths so FIM detects real node changes,
+                       not the agent container's read-only image layers.
+                       /rootfs/etc  → level 13 alert if passwd/shadow/sudoers change
+                       /rootfs/usr/bin etc → level 7 alert if binaries change -->
+                  <directories check_all="yes" realtime="yes">/rootfs/etc/passwd,/rootfs/etc/shadow,/rootfs/etc/sudoers,/rootfs/etc/ssh,/rootfs/etc/hosts</directories>
+                  <directories check_all="yes">/rootfs/usr/bin,/rootfs/usr/sbin,/rootfs/bin,/rootfs/sbin</directories>
+                  <skip_nfs>yes</skip_nfs>
+                  <skip_dev>yes</skip_dev>
+                  <skip_proc>yes</skip_proc>
+                  <skip_sys>yes</skip_sys>
+                  <process_priority>10</process_priority>
+                  <max_eps>50</max_eps>
+                </syscheck>
+
+                <rootcheck>
+                  <disabled>no</disabled>
+                  <check_files>yes</check_files>
+                  <check_trojans>yes</check_trojans>
+                  <check_dev>no</check_dev>
+                  <check_sys>yes</check_sys>
+                  <check_pids>yes</check_pids>
+                  <check_ports>yes</check_ports>
+                  <check_if>yes</check_if>
+                  <frequency>43200</frequency>
+                  <skip_nfs>yes</skip_nfs>
+                </rootcheck>
+
+                <wodle name="syscollector">
+                  <disabled>no</disabled>
+                  <interval>1h</interval>
+                  <scan_on_start>yes</scan_on_start>
+                  <hardware>yes</hardware>
+                  <os>yes</os>
+                  <network>yes</network>
+                  <packages>yes</packages>
+                  <ports all="no">yes</ports>
+                  <processes>yes</processes>
+                </wodle>
+
+                <sca>
+                  <enabled>yes</enabled>
+                  <scan_on_start>yes</scan_on_start>
+                  <interval>12h</interval>
+                  <skip_nfs>yes</skip_nfs>
+                </sca>
+
+                <active-response>
+                  <disabled>yes</disabled>
+                </active-response>
+
+                <!-- Amazon Linux 2023 EKS nodes use systemd-journald.
+                     /var/log/messages and /var/log/secure do not exist.
+                     The audit subsystem (auditd) captures authentication, privilege
+                     escalation, and file access events that generate high/critical
+                     Wazuh alerts. cloud-init.log captures node bootstrap events.
+                     NOTE: full journald coverage (SSH auth failures, sudo, kernel
+                     messages) requires either (a) a custom agent image with
+                     journalctl, or (b) rsyslog on the EKS node AMI to forward
+                     journald to /var/log/messages. -->
+                <localfile>
+                  <log_format>audit</log_format>
+                  <location>/var/log/audit/audit.log</location>
+                </localfile>
+              </ossec_config>
+              EOF
+              chown 999:999 /agent/etc/ossec.conf
+              chmod 0640 /agent/etc/ossec.conf
+              echo "[init] ossec.conf written."
+          volumeMounts:
+            - name: ossec-data
+              mountPath: /agent
+
+        # Stage 5 — Copy authd.pass from the Kubernetes Secret into the agent's
+        #            etc/ directory with the correct permissions.
+        #            The existing wazuh-authd-pass Secret (created by ExternalSecret
+        #            from AWS Secrets Manager) is reused here — no new Secret needed.
+        #            Note: master.conf has <use_password>no</use_password>, so the
+        #            password is not required for enrollment in this cluster.
+        #            The file is still deployed for forward compatibility.
+        - name: fix-authd-pass-perms
+          image: busybox:1.36
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "-lc"]
+          args:
+            - |
+              set -e
+              echo "[init] Copying authd.pass from Secret..."
+              mkdir -p /agent/etc
+              cp /secret/authd.pass /agent/etc/authd.pass
+              chown 0:999 /agent/etc/authd.pass
+              chmod 0640 /agent/etc/authd.pass
+              echo "[init] authd.pass deployed."
+          volumeMounts:
+            - name: ossec-data
+              mountPath: /agent
+            - name: wazuh-authd-pass
+              mountPath: /secret/authd.pass
+              subPath: authd.pass
+              readOnly: true
+
+      # ── Main container ───────────────────────────────────────────────────────
+      containers:
+        - name: wazuh-agent
+          # Official image from Docker Hub. Manager, indexer, dashboard, and agent
+          # all run 4.14.4 — versions are aligned, enrollment protocol matches.
+          image: wazuh/wazuh-agent:4.14.6
+          imagePullPolicy: IfNotPresent
+
+          command: ["/bin/sh", "-lc"]
+          args:
+            - |
+              set -e
+              echo "[agent] Starting Wazuh agent on node: ${NODE_NAME}" >> /proc/1/fd/1;
+              /var/ossec/bin/wazuh-control start
+
+              echo "[agent] Agent running. Streaming logs..."
+              tail -f /var/ossec/logs/ossec.log &
+              TAIL_PID=$!
+
+              while true; do
+                sleep 30
+                if ! /var/ossec/bin/wazuh-control status \
+                    | grep -q "wazuh-agentd is running"; then
+                  echo "[agent] ERROR: wazuh-agentd stopped. Exiting for pod restart." >> /proc/1/fd/1;
+                  kill "${TAIL_PID}" 2>/dev/null
+                  exit 1
+                fi
+              done
+
+          env:
+            - name: WAZUH_MANAGER
+              value: "wazuh-workers.security.svc.cluster.local"
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+
+          securityContext:
+            runAsUser: 0
+            allowPrivilegeEscalation: true
+            capabilities:
+              add:
+                # SETGID/SETUID: official Wazuh requirements for agent process management
+                - SETGID
+                - SETUID
+                # SYS_PTRACE: addition beyond official docs — required for rootcheck
+                # to inspect host process memory when hostPID=true
+                - SYS_PTRACE
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 384Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+
+          volumeMounts:
+            # Host /var/log mounted read-only so the agent can collect node logs.
+            # With this mount, ossec.conf paths like /var/log/audit/audit.log and
+            # /var/log/cloud-init.log refer to the HOST's /var/log directory.
+            - name: varlog
+              mountPath: /var/log
+              readOnly: true
+
+            # Host root filesystem mounted read-only for FIM visibility.
+            # syscheck monitors /rootfs/etc, /rootfs/usr/bin, etc. so changes
+            # to actual node files (not the container image layers) generate alerts.
+            - name: host-root
+              mountPath: /rootfs
+              readOnly: true
+
+            # Full agent state mounted from hostPath.
+            # Contains: binaries (seeded by init), ossec.conf (written by init),
+            # client.keys (enrollment key — persists across pod restarts),
+            # queued events, logs, and all runtime state.
+            - name: ossec-data
+              mountPath: /var/ossec
+
+      # ── Volumes ─────────────────────────────────────────────────────────────
+      volumes:
+        # Host /var/log — read-only, for log collection (syslog, audit, cloud-init)
+        - name: varlog
+          hostPath:
+            path: /var/log
+            type: Directory
+
+        # Host root filesystem — read-only, for FIM scanning of actual node files.
+        # The agent's syscheck config uses /rootfs/* paths to monitor /etc/passwd,
+        # /etc/shadow, /usr/bin, etc. on the underlying EKS node.
+        - name: host-root
+          hostPath:
+            path: /
+            type: Directory
+
+        # Persistent agent state on the host node.
+        # Path /var/lib/wazuh-agent is specific to this deployment to avoid
+        # colliding with any natively installed Wazuh agent on the node.
+        - name: ossec-data
+          hostPath:
+            path: /var/lib/wazuh-agent
+            type: DirectoryOrCreate
+
+
+        # Enrollment password from the existing wazuh-authd-pass K8s Secret.
+        # This Secret is already created by the ExternalSecret in wazuh/externalsecret.yaml.
+        - name: wazuh-authd-pass
+          secret:
+            secretName: wazuh-authd-pass
+
+      dnsPolicy: ClusterFirst
+      priorityClassName: system-node-critical

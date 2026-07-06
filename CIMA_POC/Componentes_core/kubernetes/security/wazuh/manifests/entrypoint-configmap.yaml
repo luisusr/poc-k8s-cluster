@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wazuh-manager-entrypoint
+  namespace: security
+data:
+  # Runs just before wazuh-control start via cont-init.d/2-manager's
+  # function_entrypoint_scripts hook (iterates /entrypoint-scripts/*.sh).
+  # Guarantees ossec.conf is applied from the mounted configmap and that
+  # $WAZUH_CLUSTER_KEY is substituted with the actual secret value before
+  # any Wazuh daemon reads the configuration.
+  00-prepare-ossec-conf.sh: |
+    #!/bin/bash
+    set -e
+
+    CONF_MOUNT="/wazuh-config-mount/etc/ossec.conf"
+    CONF_TARGET="/var/ossec/etc/ossec.conf"
+
+    if [ -f "$CONF_MOUNT" ]; then
+      cp "$CONF_MOUNT" "$CONF_TARGET"
+      chown root:wazuh "$CONF_TARGET"
+      chmod 640 "$CONF_TARGET"
+    fi
+
+    if [ -n "${WAZUH_CLUSTER_KEY}" ]; then
+      sed -i "s/\$WAZUH_CLUSTER_KEY/${WAZUH_CLUSTER_KEY}/g" "$CONF_TARGET"
+    fi

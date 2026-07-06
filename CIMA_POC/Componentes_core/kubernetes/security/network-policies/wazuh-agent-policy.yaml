@@ -1,0 +1,47 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-wazuh-agent
+  namespace: security
+spec:
+  podSelector:
+    matchLabels:
+      app: wazuh-agent
+  policyTypes:
+    - Ingress
+    - Egress
+
+  # Agents never accept incoming connections — they are pure producers.
+  ingress: []
+
+  egress:
+    # Event forwarding > workers only (port 1514).
+    # Selecting by node-type: worker is safer but both master and worker share
+    # app: wazuh-manager; use the broad label for 1514 (harmless if it also
+    # matches master — master accepts 1514 for cluster comms).
+    - to:
+        - podSelector:
+            matchLabels:
+              app: wazuh-manager
+      ports:
+        - protocol: TCP
+          port: 1514
+
+    # Enrollment > master only (authd runs exclusively on master pods).
+    # Using node-type: master prevents the agent from attempting 1515 on worker
+    # pods, which causes spurious "Unable to connect" errors in agent logs.
+    - to:
+        - podSelector:
+            matchLabels:
+              app: wazuh-manager
+              node-type: master
+      ports:
+        - protocol: TCP
+          port: 1515
+
+    # DNS — required for service name resolution
+    - ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53

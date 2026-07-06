@@ -1,0 +1,16 @@
+# Copyright (C) 2019, Wazuh Inc.
+#
+# This program is a free software; you can redistribute it
+# and/or modify it under the terms of the GNU General Public
+# License (version 2) as published by the FSF - Free Software
+# Foundation.
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - secrets/wazuh-api-cred-secret.yaml
+  - secrets/wazuh-authd-pass-secret.yaml
+  - secrets/wazuh-cluster-key-secret.yaml
+  - secrets/dashboard-cred-secret.yaml
+  - secrets/indexer-cred-secret.yaml

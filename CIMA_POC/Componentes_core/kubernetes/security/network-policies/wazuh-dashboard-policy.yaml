@@ -1,0 +1,46 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-wazuh-dashboard
+  namespace: security
+spec:
+  podSelector:
+    matchLabels:
+      app: wazuh-dashboard
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # ALB health checks and user traffic
+    - ports:
+        - protocol: TCP
+          port: 5601
+  egress:
+    # Wazuh Indexer (search and data queries)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: wazuh-indexer
+      ports:
+        - protocol: TCP
+          port: 9200
+    # Wazuh Manager REST API (cluster status, agent management)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: wazuh-manager
+      ports:
+        - protocol: TCP
+          port: 55000
+    # DNS resolution
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # AWS APIs (Secrets Manager for ExternalSecret)
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 443

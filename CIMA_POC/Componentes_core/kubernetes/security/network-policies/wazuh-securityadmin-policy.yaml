@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-wazuh-securityadmin
+  namespace: security
+spec:
+  podSelector:
+    matchLabels:
+      app: wazuh-securityadmin
+  policyTypes:
+    - Egress
+  egress:
+    # Connect to OpenSearch to run securityadmin.sh (health check + config load)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: wazuh-indexer
+      ports:
+        - protocol: TCP
+          port: 9200
+    # DNS resolution
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53

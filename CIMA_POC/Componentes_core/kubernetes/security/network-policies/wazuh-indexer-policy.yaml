@@ -1,0 +1,70 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-wazuh-indexer
+  namespace: security
+spec:
+  podSelector:
+    matchLabels:
+      app: wazuh-indexer
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Wazuh Manager writes and queries events
+    - from:
+        - podSelector:
+            matchLabels:
+              app: wazuh-manager
+      ports:
+        - protocol: TCP
+          port: 9200
+    # Wazuh Dashboard reads events and performs searches
+    - from:
+        - podSelector:
+            matchLabels:
+              app: wazuh-dashboard
+      ports:
+        - protocol: TCP
+          port: 9200
+    # Inter-indexer communication (OpenSearch cluster transport)
+    - from:
+        - podSelector:
+            matchLabels:
+              app: wazuh-indexer
+      ports:
+        - protocol: TCP
+          port: 9200
+        - protocol: TCP
+          port: 9300
+    # ArgoCD PostSync Job: loads security config via securityadmin.sh
+    - from:
+        - podSelector:
+            matchLabels:
+              app: wazuh-securityadmin
+      ports:
+        - protocol: TCP
+          port: 9200
+  egress:
+    # Inter-indexer communication (OpenSearch cluster transport)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: wazuh-indexer
+      ports:
+        - protocol: TCP
+          port: 9200
+        - protocol: TCP
+          port: 9300
+    # DNS resolution
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # AWS APIs (metadata service, S3 snapshots if enabled)
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 443
