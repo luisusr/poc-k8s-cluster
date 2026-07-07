@@ -300,6 +300,12 @@ spec:
                   <log_format>audit</log_format>
                   <location>/var/log/audit/audit.log</location>
                 </localfile>
+
+                <localfile>
+                  <log_format>syslog</log_format>
+                  <location>/var/log/cloud-init.log</location>
+                </localfile>
+
               </ossec_config>
               EOF
               chown 999:999 /agent/etc/ossec.conf
@@ -349,7 +355,7 @@ spec:
           args:
             - |
               set -e
-              echo "[agent] Starting Wazuh agent on node: ${NODE_NAME}" >> /proc/1/fd/1;
+              echo "[agent] Starting Wazuh agent on node: ${NODE_NAME}"
               /var/ossec/bin/wazuh-control start
 
               echo "[agent] Agent running. Streaming logs..."
@@ -360,7 +366,7 @@ spec:
                 sleep 30
                 if ! /var/ossec/bin/wazuh-control status \
                     | grep -q "wazuh-agentd is running"; then
-                  echo "[agent] ERROR: wazuh-agentd stopped. Exiting for pod restart." >> /proc/1/fd/1;
+                  echo "[agent] ERROR: wazuh-agentd stopped. Exiting for pod restart."
                   kill "${TAIL_PID}" 2>/dev/null
                   exit 1
                 fi

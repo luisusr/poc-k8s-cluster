@@ -28,6 +28,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: headlamp
+                name: kubernetes-dashboard
                 port:
-                  number: 4466
+                  number: 9090
