@@ -7,7 +7,7 @@ metadata:
     app: wazuh-agent
     app.kubernetes.io/name: wazuh-agent
     app.kubernetes.io/component: security
-    app.kubernetes.io/version: "4.14.4"
+    app.kubernetes.io/version: "4.14.6"
 spec:
   selector:
     matchLabels:
@@ -24,14 +24,14 @@ spec:
         app: wazuh-agent
         app.kubernetes.io/name: wazuh-agent
         app.kubernetes.io/component: security
-        app.kubernetes.io/version: "4.14.4"
+        app.kubernetes.io/version: "4.14.6"
 
     spec:
       serviceAccountName: wazuh-agent
       terminationGracePeriodSeconds: 20
 
       # ── Version note ────────────────────────────────────────────────────────
-      # All components (manager, indexer, dashboard, agent) run 4.14.4.
+      # All components (manager, indexer, dashboard, agent) run 4.14.6.
       # Agent and manager versions match — enrollment protocol compatible.
       # ────────────────────────────────────────────────────────────────────────
 
@@ -98,7 +98,7 @@ spec:
         #            so the node does not create a duplicate agent entry in the
         #            manager on upgrade.
         - name: seed-ossec-tree
-          image: wazuh/wazuh-agent:4.14.4
+          image: wazuh/wazuh-agent:4.14.6
           imagePullPolicy: IfNotPresent
           command: ["/bin/sh", "-lc"]
           args:
@@ -347,7 +347,7 @@ spec:
       containers:
         - name: wazuh-agent
           # Official image from Docker Hub. Manager, indexer, dashboard, and agent
-          # all run 4.14.4 — versions are aligned, enrollment protocol matches.
+          # all run 4.14.6 — versions are aligned, enrollment protocol matches.
           image: wazuh/wazuh-agent:4.14.6
           imagePullPolicy: IfNotPresent
 
