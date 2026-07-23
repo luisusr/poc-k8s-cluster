@@ -3,9 +3,10 @@ kind: Ingress
 metadata:
   name: prometheus-ingress
   namespace: cima-monitoring
-  annotations:
-      kubernetes.io/ingress.class: traefik
+  # annotations:
+  #     kubernetes.io/ingress.class: traefik
 spec:
+  ingressClassName: traefik-lb
   tls:
   - hosts:
     - prometheus.cima.es
