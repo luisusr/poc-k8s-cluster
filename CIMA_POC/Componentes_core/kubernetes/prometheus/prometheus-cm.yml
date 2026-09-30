@@ -8,8 +8,9 @@ metadata:
 data:
   prometheus.yml: |
     global:
-      scrape_interval: 5s
-      evaluation_interval: 5s
+      scrape_interval: 20s
+      evaluation_interval: 20s
+      scrape_timeout: 10s
     
     scrape_configs:
       - job_name: traefik
@@ -18,8 +19,6 @@ data:
           - traefik-service.cima-networking:8080
       
       - job_name: kubernetes-nodes-cadvisor
-        scrape_interval: 10s
-        scrape_timeout: 10s
         scheme: https  # remove if you want to scrape metrics on insecure port
         tls_config:
           ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
