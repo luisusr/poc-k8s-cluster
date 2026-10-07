@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openshift-console
+  namespace: openshift-console
+  labels:
+    app: openshift-console
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openshift-console
+  template:
+    metadata:
+      labels:
+        app: openshift-console
+    spec:
+      serviceAccountName: openshift-console
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: console
+          image: quay.io/openshift/origin-console
+          ports:
+            - containerPort: 9000
+              name: http
+          env:
+          - name: BRIDGE_USER_AUTH
+            value: disabled
+          - name: BRIDGE_K8S_MODE
+            value: off-cluster
+          - name: BRIDGE_K8S_MODE_OFF_CLUSTER_ENDPOINT
+            value: https://kubernetes.default:443
+          - name: BRIDGE_K8S_MODE_OFF_CLUSTER_CA_FILE
+            value: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+          - name: BRIDGE_K8S_AUTH
+            value: bearer-token
+          - name: BRIDGE_K8S_AUTH_BEARER_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: openshift-console-secret
+                key: token
+          volumeMounts:
+            - name: k8s-ca-volume
+              mountPath: /etc/ssl/certs/kubernetes-ca.crt
+              subPath: ca.crt
+      volumes:
+        - name: k8s-ca-volume
+          secret:
+            secretName: openshift-console-secret
