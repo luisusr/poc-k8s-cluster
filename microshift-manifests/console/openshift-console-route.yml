@@ -9,3 +9,6 @@ spec:
     name: openshift-console
   port:
     targetPort: console-http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: None

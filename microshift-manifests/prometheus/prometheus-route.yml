@@ -9,3 +9,6 @@ spec:
     name: prometheus
   port:
     targetPort: prom-ui
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: None

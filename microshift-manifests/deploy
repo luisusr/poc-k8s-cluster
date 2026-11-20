@@ -1,5 +1,4 @@
 #!/bin/bash
-./createdir
 kubectl apply -f namespace.yml
 kubectl create secret tls tls-cert --key tls/tls.key --cert tls/tls.crt -n openshift-apps
 kubectl apply -f prometheus/
